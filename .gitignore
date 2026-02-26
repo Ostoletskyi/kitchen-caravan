@@ -2,6 +2,7 @@
 # Unity .gitignore
 # =========================
 
+# Unity generated
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
@@ -9,6 +10,13 @@
 [Bb]uilds/
 [Ll]ogs/
 UserSettings/
+MemoryCaptures/
+Recordings/
+
+# Asset meta
+*.pidb
+*.svd
+*.pdb
 
 # Visual Studio
 .vs/
@@ -19,16 +27,33 @@ UserSettings/
 *.tmp
 *.user
 *.userprefs
-*.pidb
 *.booproj
 
 # Rider
 .idea/
 
+# VS Code
+.vscode/
+
 # OS
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # Crash Reports
 sysinfo.txt
 
+# Plastic SCM (если случайно включился)
+.plastic/
+ignore.conf
+
+# Android build output
+.gradle/
+.gradle-cache/
+.gradleTemp/
+
+# Addressables build (если добавишь позже)
+ServerData/
+
+# Do not ignore meta files
+!*.meta
