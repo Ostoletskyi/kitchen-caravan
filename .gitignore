@@ -1,0 +1,34 @@
+﻿# =========================
+# Unity .gitignore
+# =========================
+
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+UserSettings/
+
+# Visual Studio
+.vs/
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+
+# Rider
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Crash Reports
+sysinfo.txt
+
