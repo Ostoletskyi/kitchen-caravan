@@ -1,0 +1,30 @@
+{
+  "openWindowsTerminal": false,
+  "terminalsToOpen": [
+    {
+      "title": "KC - Git",
+      "command": "cd 'C:\\Projects\\KitchenCaravan'; git status"
+    },
+    {
+      "title": "KC - Build",
+      "command": "cd 'C:\\Projects\\KitchenCaravan'; dotnet --info"
+    },
+    {
+      "title": "KC - Tools",
+      "command": "cd 'C:\\Projects\\KitchenCaravan'; dir"
+    }
+  ],
+  "git": {
+    "autoPull": false,
+    "remote": "origin",
+    "branch": ""
+  },
+  "unity": {
+    "unityHubPath": "",
+    "openProject": true
+  },
+  "visualStudio": {
+    "devenvPath": "",
+    "solutionRelativePath": ""
+  }
+}
