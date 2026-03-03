@@ -1,0 +1,1499 @@
+diff --git a/Assets/_Project/Enemies.meta b/Assets/_Project/Enemies.meta
+new file mode 100644
+index 0000000..9d8056a
+--- /dev/null
++++ b/Assets/_Project/Enemies.meta
+@@ -0,0 +1,8 @@
++fileFormatVersion: 2
++guid: f4f74a1ff4b24098a7a6d67635298d9d
++folderAsset: yes
++DefaultImporter:
++  externalObjects: {}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm.meta b/Assets/_Project/Enemies/Worm.meta
+new file mode 100644
+index 0000000..ef18a14
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm.meta
+@@ -0,0 +1,7 @@
++fileFormatVersion: 2
++guid: f0af83f4f5a44295b353776f9ba5f718
++DefaultImporter:
++  externalObjects: {}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Docs.meta b/Assets/_Project/Enemies/Worm/Docs.meta
+new file mode 100644
+index 0000000..255b5a3
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Docs.meta
+@@ -0,0 +1,7 @@
++fileFormatVersion: 2
++guid: f5b7a0f2e3d84e8f858b40d3aaadcf6e
++DefaultImporter:
++  externalObjects: {}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Docs/WormEnemyDemo.md b/Assets/_Project/Enemies/Worm/Docs/WormEnemyDemo.md
+new file mode 100644
+index 0000000..7e51f9a
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Docs/WormEnemyDemo.md
+@@ -0,0 +1,19 @@
++# Worm Enemy Demo
++
++## Open test scene
++1. Open Unity project in 2022.3 LTS.
++2. Open `Assets/_Project/Enemies/Worm/Scenes/Dev_WormTest.unity`.
++3. Press Play.
++
++## Test behavior
++1. Click any body segment to deal 100 damage to that specific segment.
++2. Verify the HP number above that segment decreases, then the segment is removed at 0 HP.
++3. Confirm the chain shortens and reconnects smoothly after each segment death.
++4. Click the head while segments exist and verify it shows `IMMUNE` and does not lose HP.
++5. Destroy all segments, then click the head to reduce HP and kill the enemy.
++
++## Assets created
++- `Assets/_Project/Enemies/Worm/Prefabs/WormHead.prefab`
++- `Assets/_Project/Enemies/Worm/Prefabs/WormSegment.prefab`
++- `Assets/_Project/Enemies/Worm/Prefabs/WormEnemy.prefab`
++- `Assets/_Project/Enemies/Worm/Scenes/Dev_WormTest.unity`
+diff --git a/Assets/_Project/Enemies/Worm/Docs/WormEnemyDemo.md.meta b/Assets/_Project/Enemies/Worm/Docs/WormEnemyDemo.md.meta
+new file mode 100644
+index 0000000..2971b89
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Docs/WormEnemyDemo.md.meta
+@@ -0,0 +1,7 @@
++fileFormatVersion: 2
++guid: a7d3af85c8ff4db0aa478308ed8d11e3
++DefaultImporter:
++  externalObjects: {}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Prefabs.meta b/Assets/_Project/Enemies/Worm/Prefabs.meta
+new file mode 100644
+index 0000000..afbcd66
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Prefabs.meta
+@@ -0,0 +1,7 @@
++fileFormatVersion: 2
++guid: d9a8dfe36bc54254ae40e1515d3f8a91
++DefaultImporter:
++  externalObjects: {}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Prefabs/WormEnemy.prefab b/Assets/_Project/Enemies/Worm/Prefabs/WormEnemy.prefab
+new file mode 100644
+index 0000000..5e1bf06
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Prefabs/WormEnemy.prefab
+@@ -0,0 +1,60 @@
++%YAML 1.1
++%TAG !u! tag:unity3d.com,2011:
++--- !u!1 &100000
++GameObject:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  serializedVersion: 6
++  m_Component:
++  - component: {fileID: 400000}
++  - component: {fileID: 11400000}
++  m_Layer: 0
++  m_Name: WormEnemy
++  m_TagString: Untagged
++  m_Icon: {fileID: 0}
++  m_NavMeshLayer: 0
++  m_StaticEditorFlags: 0
++  m_IsActive: 1
++--- !u!4 &400000
++Transform:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 100000}
++  serializedVersion: 2
++  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
++  m_LocalPosition: {x: -6, y: 0, z: 0}
++  m_LocalScale: {x: 1, y: 1, z: 1}
++  m_ConstrainProportionsScale: 0
++  m_Children: []
++  m_Father: {fileID: 0}
++  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
++--- !u!114 &11400000
++MonoBehaviour:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 100000}
++  m_Enabled: 1
++  m_EditorHideFlags: 0
++  m_Script: {fileID: 11500000, guid: 7ea74dd5451f44f099f699a879f68d84, type: 3}
++  m_Name: 
++  m_EditorClassIdentifier: 
++  _headPrefab: {fileID: 11400000, guid: 4425dcb5606e4952912f30e481a76e1f, type: 3}
++  _segmentPrefab: {fileID: 11400000, guid: 7b70e5e379fe48e1bc88ea789e5df3ce, type: 3}
++  _initialSegmentCount: 6
++  _headMaxHp: 500
++  _segmentBaseHp: 120
++  _segmentHpStep: 20
++  _segmentSpacing: 0.9
++  _spawnOnStart: 1
++  _headDirection: {x: 1, y: 0}
++  _headSpeed: 2
++  _waveAmplitude: 1.2
++  _waveFrequency: 1.6
++  _trailStep: 0.15
++  _followLerpSpeed: 18
+diff --git a/Assets/_Project/Enemies/Worm/Prefabs/WormEnemy.prefab.meta b/Assets/_Project/Enemies/Worm/Prefabs/WormEnemy.prefab.meta
+new file mode 100644
+index 0000000..7b330f6
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Prefabs/WormEnemy.prefab.meta
+@@ -0,0 +1,7 @@
++fileFormatVersion: 2
++guid: 0a167f50f37b4c10be789d2bf8128b93
++DefaultImporter:
++  externalObjects: {}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Prefabs/WormHead.prefab b/Assets/_Project/Enemies/Worm/Prefabs/WormHead.prefab
+new file mode 100644
+index 0000000..4a3eb3c
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Prefabs/WormHead.prefab
+@@ -0,0 +1,49 @@
++%YAML 1.1
++%TAG !u! tag:unity3d.com,2011:
++--- !u!1 &100000
++GameObject:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  serializedVersion: 6
++  m_Component:
++  - component: {fileID: 400000}
++  - component: {fileID: 11400000}
++  m_Layer: 0
++  m_Name: WormHead
++  m_TagString: Untagged
++  m_Icon: {fileID: 0}
++  m_NavMeshLayer: 0
++  m_StaticEditorFlags: 0
++  m_IsActive: 1
++--- !u!4 &400000
++Transform:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 100000}
++  serializedVersion: 2
++  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
++  m_LocalPosition: {x: 0, y: 0, z: 0}
++  m_LocalScale: {x: 1, y: 1, z: 1}
++  m_ConstrainProportionsScale: 0
++  m_Children: []
++  m_Father: {fileID: 0}
++  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
++--- !u!114 &11400000
++MonoBehaviour:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 100000}
++  m_Enabled: 1
++  m_EditorHideFlags: 0
++  m_Script: {fileID: 11500000, guid: 8ac701a76f854e9caa9f343a925ef4f1, type: 3}
++  m_Name: 
++  m_EditorClassIdentifier: 
++  _clickDamage: 100
++  _vulnerableColor: {r: 0.95, g: 0.35, b: 0.25, a: 1}
++  _immuneColor: {r: 0.95, g: 0.75, b: 0.2, a: 1}
+diff --git a/Assets/_Project/Enemies/Worm/Prefabs/WormHead.prefab.meta b/Assets/_Project/Enemies/Worm/Prefabs/WormHead.prefab.meta
+new file mode 100644
+index 0000000..3ddd006
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Prefabs/WormHead.prefab.meta
+@@ -0,0 +1,7 @@
++fileFormatVersion: 2
++guid: 4425dcb5606e4952912f30e481a76e1f
++DefaultImporter:
++  externalObjects: {}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Prefabs/WormSegment.prefab b/Assets/_Project/Enemies/Worm/Prefabs/WormSegment.prefab
+new file mode 100644
+index 0000000..7ec92fc
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Prefabs/WormSegment.prefab
+@@ -0,0 +1,48 @@
++%YAML 1.1
++%TAG !u! tag:unity3d.com,2011:
++--- !u!1 &100000
++GameObject:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  serializedVersion: 6
++  m_Component:
++  - component: {fileID: 400000}
++  - component: {fileID: 11400000}
++  m_Layer: 0
++  m_Name: WormSegment
++  m_TagString: Untagged
++  m_Icon: {fileID: 0}
++  m_NavMeshLayer: 0
++  m_StaticEditorFlags: 0
++  m_IsActive: 1
++--- !u!4 &400000
++Transform:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 100000}
++  serializedVersion: 2
++  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
++  m_LocalPosition: {x: 0, y: 0, z: 0}
++  m_LocalScale: {x: 1, y: 1, z: 1}
++  m_ConstrainProportionsScale: 0
++  m_Children: []
++  m_Father: {fileID: 0}
++  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
++--- !u!114 &11400000
++MonoBehaviour:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 100000}
++  m_Enabled: 1
++  m_EditorHideFlags: 0
++  m_Script: {fileID: 11500000, guid: 6ae8a38815e14e7690de8fd9cae0d5ee, type: 3}
++  m_Name: 
++  m_EditorClassIdentifier: 
++  _clickDamage: 100
++  _baseColor: {r: 0.45, g: 0.95, b: 0.4, a: 1}
+diff --git a/Assets/_Project/Enemies/Worm/Prefabs/WormSegment.prefab.meta b/Assets/_Project/Enemies/Worm/Prefabs/WormSegment.prefab.meta
+new file mode 100644
+index 0000000..accba4e
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Prefabs/WormSegment.prefab.meta
+@@ -0,0 +1,7 @@
++fileFormatVersion: 2
++guid: 7b70e5e379fe48e1bc88ea789e5df3ce
++DefaultImporter:
++  externalObjects: {}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Runtime.meta b/Assets/_Project/Enemies/Worm/Runtime.meta
+new file mode 100644
+index 0000000..1d83623
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime.meta
+@@ -0,0 +1,7 @@
++fileFormatVersion: 2
++guid: d4267de54e0443b0a6ac5876d88f7ec8
++DefaultImporter:
++  externalObjects: {}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/IWormDamageable.cs b/Assets/_Project/Enemies/Worm/Runtime/IWormDamageable.cs
+new file mode 100644
+index 0000000..1d55ec4
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/IWormDamageable.cs
+@@ -0,0 +1,7 @@
++namespace KitchenCaravan.Enemies.Worm
++{
++    public interface IWormDamageable
++    {
++        bool ApplyDamage(float amount);
++    }
++}
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/IWormDamageable.cs.meta b/Assets/_Project/Enemies/Worm/Runtime/IWormDamageable.cs.meta
+new file mode 100644
+index 0000000..5f60644
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/IWormDamageable.cs.meta
+@@ -0,0 +1,11 @@
++fileFormatVersion: 2
++guid: ce78d54d87dc4437b042e57ef72d228d
++MonoImporter:
++  externalObjects: {}
++  serializedVersion: 2
++  defaultReferences: []
++  executionOrder: 0
++  icon: {instanceID: 0}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/KitchenCaravan.Enemies.Worm.Runtime.asmdef b/Assets/_Project/Enemies/Worm/Runtime/KitchenCaravan.Enemies.Worm.Runtime.asmdef
+new file mode 100644
+index 0000000..6011d15
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/KitchenCaravan.Enemies.Worm.Runtime.asmdef
+@@ -0,0 +1,4 @@
++{
++  "name": "KitchenCaravan.Enemies.Worm.Runtime",
++  "rootNamespace": "KitchenCaravan.Enemies.Worm"
++}
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/KitchenCaravan.Enemies.Worm.Runtime.asmdef.meta b/Assets/_Project/Enemies/Worm/Runtime/KitchenCaravan.Enemies.Worm.Runtime.asmdef.meta
+new file mode 100644
+index 0000000..76d0c3a
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/KitchenCaravan.Enemies.Worm.Runtime.asmdef.meta
+@@ -0,0 +1,7 @@
++fileFormatVersion: 2
++guid: 33a611755f5948f39e4790a5e1112b84
++AssemblyDefinitionImporter:
++  externalObjects: {}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/WormController.cs b/Assets/_Project/Enemies/Worm/Runtime/WormController.cs
+new file mode 100644
+index 0000000..1fe641d
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/WormController.cs
+@@ -0,0 +1,236 @@
++using System.Collections.Generic;
++using UnityEngine;
++
++namespace KitchenCaravan.Enemies.Worm
++{
++    public sealed class WormController : MonoBehaviour
++    {
++        [Header("Prefabs")]
++        [SerializeField] private WormHead _headPrefab;
++        [SerializeField] private WormSegment _segmentPrefab;
++
++        [Header("Chain")]
++        [SerializeField, Min(0)] private int _initialSegmentCount = 6;
++        [SerializeField, Min(1f)] private float _headMaxHp = 500f;
++        [SerializeField, Min(1f)] private float _segmentBaseHp = 120f;
++        [SerializeField, Min(0f)] private float _segmentHpStep = 25f;
++        [SerializeField, Min(0.2f)] private float _segmentSpacing = 0.9f;
++        [SerializeField] private bool _spawnOnStart = true;
++
++        [Header("Head Motion")]
++        [SerializeField] private Vector2 _headDirection = Vector2.right;
++        [SerializeField, Min(0f)] private float _headSpeed = 2f;
++        [SerializeField, Min(0f)] private float _waveAmplitude = 1.2f;
++        [SerializeField, Min(0f)] private float _waveFrequency = 1.6f;
++
++        [Header("Follow")]
++        [SerializeField, Min(0.1f)] private float _trailStep = 0.15f;
++        [SerializeField, Min(1f)] private float _followLerpSpeed = 18f;
++
++        private readonly List<WormSegment> _segments = new List<WormSegment>();
++        private readonly List<Vector3> _trail = new List<Vector3>();
++
++        private WormHead _headInstance;
++        private Vector3 _headOrigin;
++        private Vector3 _headForward;
++        private Vector3 _headPerpendicular;
++        private float _elapsed;
++
++        public bool HasLivingSegments
++        {
++            get
++            {
++                PruneNullSegments();
++                return _segments.Count > 0;
++            }
++        }
++
++        private void Start()
++        {
++            if (_spawnOnStart)
++            {
++                SpawnChain();
++            }
++        }
++
++        private void Update()
++        {
++            if (_headInstance == null)
++            {
++                return;
++            }
++
++            PruneNullSegments();
++            TickHeadMotion();
++            UpdateTrail();
++            UpdateSegmentsFollow();
++        }
++
++        [ContextMenu("Spawn Chain")]
++        public void SpawnChain()
++        {
++            if (_headPrefab == null || _segmentPrefab == null)
++            {
++                Debug.LogError("WormController: Missing head or segment prefab reference.", this);
++                return;
++            }
++
++            ClearSpawnedInstances();
++            _segments.Clear();
++            _trail.Clear();
++            _elapsed = 0f;
++
++            _headForward = _headDirection.sqrMagnitude <= 0.0001f
++                ? Vector3.right
++                : new Vector3(_headDirection.x, _headDirection.y, 0f).normalized;
++            _headPerpendicular = new Vector3(-_headForward.y, _headForward.x, 0f);
++            _headOrigin = transform.position;
++
++            _headInstance = Instantiate(_headPrefab, _headOrigin, Quaternion.identity, transform);
++            _headInstance.name = "WormHead";
++            _headInstance.Initialize(this, _headMaxHp);
++
++            for (int i = 0; i < _initialSegmentCount; i++)
++            {
++                float segmentHp = _segmentBaseHp + (_segmentHpStep * i);
++                Vector3 spawnPosition = _headOrigin - (_headForward * _segmentSpacing * (i + 1));
++                WormSegment segment = Instantiate(_segmentPrefab, spawnPosition, Quaternion.identity, transform);
++                segment.name = $"WormSegment_{i + 1:00}";
++                segment.Initialize(this, segmentHp, i);
++                _segments.Add(segment);
++            }
++
++            _trail.Add(_headOrigin);
++        }
++
++        public void NotifySegmentDestroyed(WormSegment segment)
++        {
++            if (segment == null)
++            {
++                return;
++            }
++
++            bool removed = _segments.Remove(segment);
++            if (removed)
++            {
++                Destroy(segment.gameObject);
++            }
++        }
++
++        public void NotifyHeadDestroyed(WormHead head)
++        {
++            if (head != _headInstance)
++            {
++                return;
++            }
++
++            Destroy(gameObject);
++        }
++
++        private void TickHeadMotion()
++        {
++            _elapsed += Time.deltaTime;
++            float linearTravel = _elapsed * _headSpeed;
++            float wave = Mathf.Sin(_elapsed * _waveFrequency) * _waveAmplitude;
++            _headInstance.transform.position = _headOrigin + (_headForward * linearTravel) + (_headPerpendicular * wave);
++        }
++
++        private void UpdateTrail()
++        {
++            Vector3 headPosition = _headInstance.transform.position;
++            if (_trail.Count == 0)
++            {
++                _trail.Add(headPosition);
++                return;
++            }
++
++            if (Vector3.Distance(_trail[0], headPosition) >= _trailStep)
++            {
++                _trail.Insert(0, headPosition);
++            }
++            else
++            {
++                _trail[0] = headPosition;
++            }
++
++            float maxDistance = _segmentSpacing * (_segments.Count + 2);
++            int maxPoints = Mathf.Max(4, Mathf.CeilToInt(maxDistance / _trailStep) + 2);
++            if (_trail.Count > maxPoints)
++            {
++                _trail.RemoveRange(maxPoints, _trail.Count - maxPoints);
++            }
++        }
++
++        private void UpdateSegmentsFollow()
++        {
++            for (int i = 0; i < _segments.Count; i++)
++            {
++                WormSegment segment = _segments[i];
++                if (segment == null)
++                {
++                    continue;
++                }
++
++                float distanceFromHead = _segmentSpacing * (i + 1);
++                Vector3 targetPosition = GetTrailPosition(distanceFromHead);
++                segment.UpdateFollowTarget(targetPosition, _followLerpSpeed);
++            }
++        }
++
++        private Vector3 GetTrailPosition(float distance)
++        {
++            if (_trail.Count == 0)
++            {
++                return _headInstance != null ? _headInstance.transform.position : transform.position;
++            }
++
++            float remaining = distance;
++            for (int i = 0; i < _trail.Count - 1; i++)
++            {
++                Vector3 from = _trail[i];
++                Vector3 to = _trail[i + 1];
++                float segmentLength = Vector3.Distance(from, to);
++                if (segmentLength <= 0.0001f)
++                {
++                    continue;
++                }
++
++                if (remaining <= segmentLength)
++                {
++                    return Vector3.Lerp(from, to, remaining / segmentLength);
++                }
++
++                remaining -= segmentLength;
++            }
++
++            return _trail[_trail.Count - 1];
++        }
++
++        private void ClearSpawnedInstances()
++        {
++            for (int i = transform.childCount - 1; i >= 0; i--)
++            {
++                Transform child = transform.GetChild(i);
++                if (Application.isPlaying)
++                {
++                    Destroy(child.gameObject);
++                }
++                else
++                {
++                    DestroyImmediate(child.gameObject);
++                }
++            }
++        }
++
++        private void PruneNullSegments()
++        {
++            for (int i = _segments.Count - 1; i >= 0; i--)
++            {
++                if (_segments[i] == null)
++                {
++                    _segments.RemoveAt(i);
++                }
++            }
++        }
++    }
++}
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/WormController.cs.meta b/Assets/_Project/Enemies/Worm/Runtime/WormController.cs.meta
+new file mode 100644
+index 0000000..dd36b57
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/WormController.cs.meta
+@@ -0,0 +1,11 @@
++fileFormatVersion: 2
++guid: 7ea74dd5451f44f099f699a879f68d84
++MonoImporter:
++  externalObjects: {}
++  serializedVersion: 2
++  defaultReferences: []
++  executionOrder: 0
++  icon: {instanceID: 0}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/WormFloatingText.cs b/Assets/_Project/Enemies/Worm/Runtime/WormFloatingText.cs
+new file mode 100644
+index 0000000..667d672
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/WormFloatingText.cs
+@@ -0,0 +1,63 @@
++using UnityEngine;
++
++namespace KitchenCaravan.Enemies.Worm
++{
++    public sealed class WormFloatingText : MonoBehaviour
++    {
++        [SerializeField, Min(0.01f)] private float _duration = 0.7f;
++        [SerializeField] private Vector3 _velocity = new Vector3(0f, 1.3f, 0f);
++
++        private TextMesh _textMesh;
++        private Color _startColor;
++        private float _elapsed;
++
++        public static void Spawn(Vector3 position, string text, Color color)
++        {
++            GameObject go = new GameObject("WormFloatingText");
++            go.transform.position = position;
++
++            TextMesh mesh = go.AddComponent<TextMesh>();
++            mesh.text = text;
++            mesh.characterSize = 0.1f;
++            mesh.fontSize = 32;
++            mesh.anchor = TextAnchor.MiddleCenter;
++            mesh.alignment = TextAlignment.Center;
++            mesh.color = color;
++
++            WormFloatingText floating = go.AddComponent<WormFloatingText>();
++            floating._textMesh = mesh;
++            floating._startColor = color;
++        }
++
++        private void Awake()
++        {
++            if (_textMesh == null)
++            {
++                _textMesh = GetComponent<TextMesh>();
++                if (_textMesh != null)
++                {
++                    _startColor = _textMesh.color;
++                }
++            }
++        }
++
++        private void Update()
++        {
++            _elapsed += Time.deltaTime;
++            float t = Mathf.Clamp01(_elapsed / _duration);
++            transform.position += _velocity * Time.deltaTime;
++
++            if (_textMesh != null)
++            {
++                Color color = _startColor;
++                color.a = 1f - t;
++                _textMesh.color = color;
++            }
++
++            if (_elapsed >= _duration)
++            {
++                Destroy(gameObject);
++            }
++        }
++    }
++}
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/WormFloatingText.cs.meta b/Assets/_Project/Enemies/Worm/Runtime/WormFloatingText.cs.meta
+new file mode 100644
+index 0000000..b654663
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/WormFloatingText.cs.meta
+@@ -0,0 +1,11 @@
++fileFormatVersion: 2
++guid: c4ce0d7809f14f4ea0f62ec6d1d70367
++MonoImporter:
++  externalObjects: {}
++  serializedVersion: 2
++  defaultReferences: []
++  executionOrder: 0
++  icon: {instanceID: 0}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/WormHead.cs b/Assets/_Project/Enemies/Worm/Runtime/WormHead.cs
+new file mode 100644
+index 0000000..14bd916
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/WormHead.cs
+@@ -0,0 +1,124 @@
++using UnityEngine;
++
++namespace KitchenCaravan.Enemies.Worm
++{
++    public sealed class WormHead : MonoBehaviour, IWormDamageable
++    {
++        [SerializeField] private float _clickDamage = 100f;
++        [SerializeField] private Color _vulnerableColor = new Color(0.95f, 0.35f, 0.25f, 1f);
++        [SerializeField] private Color _immuneColor = new Color(0.95f, 0.75f, 0.2f, 1f);
++
++        private WormController _controller;
++        private WormHpLabel _hpLabel;
++        private WormVisual2D _visual;
++        private float _currentHp;
++        private float _maxHp;
++        private bool _isDead;
++
++        public void Initialize(WormController controller, float maxHp)
++        {
++            _controller = controller;
++            _maxHp = Mathf.Max(1f, maxHp);
++            _currentHp = _maxHp;
++            _isDead = false;
++            EnsureComponents();
++            RefreshVisual();
++            RefreshLabel();
++        }
++
++        public bool ApplyDamage(float amount)
++        {
++            if (_isDead)
++            {
++                return false;
++            }
++
++            if (_controller != null && _controller.HasLivingSegments)
++            {
++                WormFloatingText.Spawn(transform.position + Vector3.up * 0.9f, "IMMUNE", _immuneColor);
++                return false;
++            }
++
++            _currentHp = Mathf.Max(0f, _currentHp - Mathf.Max(0f, amount));
++            WormFloatingText.Spawn(transform.position + Vector3.up * 0.75f, Mathf.RoundToInt(amount).ToString(), Color.red);
++            RefreshLabel();
++
++            if (_currentHp <= 0f)
++            {
++                _isDead = true;
++                if (_controller != null)
++                {
++                    _controller.NotifyHeadDestroyed(this);
++                }
++                else
++                {
++                    Destroy(gameObject);
++                }
++            }
++
++            return true;
++        }
++
++        private void Awake()
++        {
++            EnsureComponents();
++        }
++
++        private void Update()
++        {
++            RefreshVisual();
++        }
++
++        private void OnMouseDown()
++        {
++            ApplyDamage(_clickDamage);
++        }
++
++        private void EnsureComponents()
++        {
++            _visual = GetComponent<WormVisual2D>();
++            if (_visual == null)
++            {
++                _visual = gameObject.AddComponent<WormVisual2D>();
++            }
++
++            _visual.SetVisual(_immuneColor, new Vector2(1f, 1f));
++
++            CircleCollider2D collider = GetComponent<CircleCollider2D>();
++            if (collider == null)
++            {
++                collider = gameObject.AddComponent<CircleCollider2D>();
++            }
++
++            collider.radius = 0.45f;
++
++            _hpLabel = GetComponent<WormHpLabel>();
++            if (_hpLabel == null)
++            {
++                _hpLabel = gameObject.AddComponent<WormHpLabel>();
++            }
++
++            _hpLabel.SetOffset(new Vector3(0f, 0.95f, 0f));
++            _hpLabel.SetTextColor(Color.white);
++        }
++
++        private void RefreshVisual()
++        {
++            if (_visual == null)
++            {
++                return;
++            }
++
++            bool vulnerable = _controller == null || !_controller.HasLivingSegments;
++            _visual.SetColor(vulnerable ? _vulnerableColor : _immuneColor);
++        }
++
++        private void RefreshLabel()
++        {
++            if (_hpLabel != null)
++            {
++                _hpLabel.SetValue(_currentHp);
++            }
++        }
++    }
++}
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/WormHead.cs.meta b/Assets/_Project/Enemies/Worm/Runtime/WormHead.cs.meta
+new file mode 100644
+index 0000000..8f443ee
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/WormHead.cs.meta
+@@ -0,0 +1,11 @@
++fileFormatVersion: 2
++guid: 8ac701a76f854e9caa9f343a925ef4f1
++MonoImporter:
++  externalObjects: {}
++  serializedVersion: 2
++  defaultReferences: []
++  executionOrder: 0
++  icon: {instanceID: 0}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/WormHpLabel.cs b/Assets/_Project/Enemies/Worm/Runtime/WormHpLabel.cs
+new file mode 100644
+index 0000000..d6cf01f
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/WormHpLabel.cs
+@@ -0,0 +1,79 @@
++using UnityEngine;
++
++namespace KitchenCaravan.Enemies.Worm
++{
++    public sealed class WormHpLabel : MonoBehaviour
++    {
++        [SerializeField] private Vector3 _offset = new Vector3(0f, 0.8f, 0f);
++
++        private TextMesh _textMesh;
++
++        private void Awake()
++        {
++            EnsureTextMesh();
++            ApplyOffset();
++        }
++
++        private void LateUpdate()
++        {
++            ApplyOffset();
++        }
++
++        public void SetValue(float value)
++        {
++            EnsureTextMesh();
++            _textMesh.text = Mathf.CeilToInt(value).ToString();
++        }
++
++        public void SetOffset(Vector3 offset)
++        {
++            _offset = offset;
++            ApplyOffset();
++        }
++
++        public void SetTextColor(Color color)
++        {
++            EnsureTextMesh();
++            _textMesh.color = color;
++        }
++
++        private void EnsureTextMesh()
++        {
++            if (_textMesh != null)
++            {
++                return;
++            }
++
++            Transform existing = transform.Find("HpLabel");
++            if (existing != null)
++            {
++                _textMesh = existing.GetComponent<TextMesh>();
++            }
++
++            if (_textMesh == null)
++            {
++                GameObject textObject = new GameObject("HpLabel");
++                textObject.transform.SetParent(transform, false);
++                _textMesh = textObject.AddComponent<TextMesh>();
++            }
++
++            _textMesh.characterSize = 0.12f;
++            _textMesh.fontSize = 32;
++            _textMesh.anchor = TextAnchor.MiddleCenter;
++            _textMesh.alignment = TextAlignment.Center;
++            _textMesh.text = "0";
++            _textMesh.color = Color.white;
++        }
++
++        private void ApplyOffset()
++        {
++            if (_textMesh == null)
++            {
++                return;
++            }
++
++            _textMesh.transform.localPosition = _offset;
++            _textMesh.transform.localRotation = Quaternion.identity;
++        }
++    }
++}
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/WormHpLabel.cs.meta b/Assets/_Project/Enemies/Worm/Runtime/WormHpLabel.cs.meta
+new file mode 100644
+index 0000000..55f25de
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/WormHpLabel.cs.meta
+@@ -0,0 +1,11 @@
++fileFormatVersion: 2
++guid: 6af03485f8e4407f8f4dbf4caad60099
++MonoImporter:
++  externalObjects: {}
++  serializedVersion: 2
++  defaultReferences: []
++  executionOrder: 0
++  icon: {instanceID: 0}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/WormSegment.cs b/Assets/_Project/Enemies/Worm/Runtime/WormSegment.cs
+new file mode 100644
+index 0000000..dd5d020
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/WormSegment.cs
+@@ -0,0 +1,100 @@
++using UnityEngine;
++
++namespace KitchenCaravan.Enemies.Worm
++{
++    public sealed class WormSegment : MonoBehaviour, IWormDamageable
++    {
++        [SerializeField] private float _clickDamage = 100f;
++        [SerializeField] private Color _baseColor = new Color(0.45f, 0.95f, 0.4f, 1f);
++
++        private WormController _controller;
++        private WormHpLabel _hpLabel;
++        private WormVisual2D _visual;
++        private float _currentHp;
++        private float _maxHp;
++        private bool _isDead;
++
++        public void Initialize(WormController controller, float maxHp, int index)
++        {
++            _controller = controller;
++            _maxHp = Mathf.Max(1f, maxHp);
++            _currentHp = _maxHp;
++            _isDead = false;
++            EnsureComponents();
++
++            float shade = Mathf.Clamp01(0.92f - (index * 0.045f));
++            _visual.SetVisual(_baseColor * shade, new Vector2(0.82f, 0.82f));
++            _hpLabel.SetValue(_currentHp);
++        }
++
++        public bool ApplyDamage(float amount)
++        {
++            if (_isDead)
++            {
++                return false;
++            }
++
++            float damageAmount = Mathf.Max(0f, amount);
++            _currentHp = Mathf.Max(0f, _currentHp - damageAmount);
++            WormFloatingText.Spawn(transform.position + Vector3.up * 0.7f, Mathf.RoundToInt(damageAmount).ToString(), Color.red);
++            _hpLabel.SetValue(_currentHp);
++
++            if (_currentHp <= 0f)
++            {
++                _isDead = true;
++                if (_controller != null)
++                {
++                    _controller.NotifySegmentDestroyed(this);
++                }
++                else
++                {
++                    Destroy(gameObject);
++                }
++            }
++
++            return true;
++        }
++
++        public void UpdateFollowTarget(Vector3 targetPosition, float followLerpSpeed)
++        {
++            float t = 1f - Mathf.Exp(-Mathf.Max(0f, followLerpSpeed) * Time.deltaTime);
++            transform.position = Vector3.Lerp(transform.position, targetPosition, t);
++        }
++
++        private void Awake()
++        {
++            EnsureComponents();
++        }
++
++        private void OnMouseDown()
++        {
++            ApplyDamage(_clickDamage);
++        }
++
++        private void EnsureComponents()
++        {
++            _visual = GetComponent<WormVisual2D>();
++            if (_visual == null)
++            {
++                _visual = gameObject.AddComponent<WormVisual2D>();
++            }
++
++            CircleCollider2D collider = GetComponent<CircleCollider2D>();
++            if (collider == null)
++            {
++                collider = gameObject.AddComponent<CircleCollider2D>();
++            }
++
++            collider.radius = 0.38f;
++
++            _hpLabel = GetComponent<WormHpLabel>();
++            if (_hpLabel == null)
++            {
++                _hpLabel = gameObject.AddComponent<WormHpLabel>();
++            }
++
++            _hpLabel.SetOffset(new Vector3(0f, 0.75f, 0f));
++            _hpLabel.SetTextColor(Color.white);
++        }
++    }
++}
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/WormSegment.cs.meta b/Assets/_Project/Enemies/Worm/Runtime/WormSegment.cs.meta
+new file mode 100644
+index 0000000..4407c60
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/WormSegment.cs.meta
+@@ -0,0 +1,11 @@
++fileFormatVersion: 2
++guid: 6ae8a38815e14e7690de8fd9cae0d5ee
++MonoImporter:
++  externalObjects: {}
++  serializedVersion: 2
++  defaultReferences: []
++  executionOrder: 0
++  icon: {instanceID: 0}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/WormVisual2D.cs b/Assets/_Project/Enemies/Worm/Runtime/WormVisual2D.cs
+new file mode 100644
+index 0000000..02b9999
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/WormVisual2D.cs
+@@ -0,0 +1,79 @@
++using UnityEngine;
++
++namespace KitchenCaravan.Enemies.Worm
++{
++    [RequireComponent(typeof(SpriteRenderer))]
++    public sealed class WormVisual2D : MonoBehaviour
++    {
++        [SerializeField] private Color _color = Color.white;
++        [SerializeField] private Vector2 _size = new Vector2(0.8f, 0.8f);
++
++        private SpriteRenderer _renderer;
++        private static Sprite _sharedSprite;
++
++        private void Awake()
++        {
++            EnsureRenderer();
++            Apply();
++        }
++
++        public void SetVisual(Color color, Vector2 size)
++        {
++            _color = color;
++            _size = size;
++            Apply();
++        }
++
++        public void SetColor(Color color)
++        {
++            _color = color;
++            Apply();
++        }
++
++        private void EnsureRenderer()
++        {
++            if (_renderer == null)
++            {
++                _renderer = GetComponent<SpriteRenderer>();
++            }
++
++            if (_renderer == null)
++            {
++                _renderer = gameObject.AddComponent<SpriteRenderer>();
++            }
++
++            if (_renderer.sprite == null)
++            {
++                _renderer.sprite = GetSharedSprite();
++            }
++        }
++
++        private void Apply()
++        {
++            EnsureRenderer();
++            _renderer.color = _color;
++            transform.localScale = new Vector3(_size.x, _size.y, 1f);
++        }
++
++        private static Sprite GetSharedSprite()
++        {
++            if (_sharedSprite != null)
++            {
++                return _sharedSprite;
++            }
++
++            Texture2D texture = new Texture2D(1, 1, TextureFormat.RGBA32, false)
++            {
++                filterMode = FilterMode.Point,
++                wrapMode = TextureWrapMode.Clamp,
++                hideFlags = HideFlags.HideAndDontSave
++            };
++            texture.SetPixel(0, 0, Color.white);
++            texture.Apply();
++
++            _sharedSprite = Sprite.Create(texture, new Rect(0f, 0f, 1f, 1f), new Vector2(0.5f, 0.5f), 1f);
++            _sharedSprite.hideFlags = HideFlags.HideAndDontSave;
++            return _sharedSprite;
++        }
++    }
++}
+diff --git a/Assets/_Project/Enemies/Worm/Runtime/WormVisual2D.cs.meta b/Assets/_Project/Enemies/Worm/Runtime/WormVisual2D.cs.meta
+new file mode 100644
+index 0000000..fc4e993
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Runtime/WormVisual2D.cs.meta
+@@ -0,0 +1,11 @@
++fileFormatVersion: 2
++guid: 4ee7a5b62cc243d8ab0fd9a3562fc27b
++MonoImporter:
++  externalObjects: {}
++  serializedVersion: 2
++  defaultReferences: []
++  executionOrder: 0
++  icon: {instanceID: 0}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Scenes.meta b/Assets/_Project/Enemies/Worm/Scenes.meta
+new file mode 100644
+index 0000000..7aacf5b
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Scenes.meta
+@@ -0,0 +1,7 @@
++fileFormatVersion: 2
++guid: 4f31a825f96f4767b1f5dd7f8a2a6dc8
++DefaultImporter:
++  externalObjects: {}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 
+diff --git a/Assets/_Project/Enemies/Worm/Scenes/Dev_WormTest.unity b/Assets/_Project/Enemies/Worm/Scenes/Dev_WormTest.unity
+new file mode 100644
+index 0000000..ebd6295
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Scenes/Dev_WormTest.unity
+@@ -0,0 +1,277 @@
++%YAML 1.1
++%TAG !u! tag:unity3d.com,2011:
++--- !u!29 &1
++OcclusionCullingSettings:
++  m_ObjectHideFlags: 0
++  serializedVersion: 2
++  m_OcclusionBakeSettings:
++    smallestOccluder: 5
++    smallestHole: 0.25
++    backfaceThreshold: 100
++  m_SceneGUID: 00000000000000000000000000000000
++  m_OcclusionCullingData: {fileID: 0}
++--- !u!104 &2
++RenderSettings:
++  m_ObjectHideFlags: 0
++  serializedVersion: 10
++  m_Fog: 0
++  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
++  m_FogMode: 3
++  m_FogDensity: 0.01
++  m_LinearFogStart: 0
++  m_LinearFogEnd: 300
++  m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
++  m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
++  m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
++  m_AmbientIntensity: 1
++  m_AmbientMode: 3
++  m_SubtractiveShadowColor: {r: 0.42, g: 0.478, b: 0.627, a: 1}
++  m_SkyboxMaterial: {fileID: 0}
++  m_HaloStrength: 0.5
++  m_FlareStrength: 1
++  m_FlareFadeSpeed: 3
++  m_HaloTexture: {fileID: 0}
++  m_SpotCookie: {fileID: 10001, guid: 0000000000000000e000000000000000, type: 0}
++  m_DefaultReflectionMode: 0
++  m_DefaultReflectionResolution: 128
++  m_ReflectionBounces: 1
++  m_ReflectionIntensity: 1
++  m_CustomReflection: {fileID: 0}
++  m_Sun: {fileID: 0}
++  m_UseRadianceAmbientProbe: 0
++--- !u!157 &3
++LightmapSettings:
++  m_ObjectHideFlags: 0
++  serializedVersion: 13
++  m_BakeOnSceneLoad: 0
++  m_GISettings:
++    serializedVersion: 2
++    m_BounceScale: 1
++    m_IndirectOutputScale: 1
++    m_AlbedoBoost: 1
++    m_EnvironmentLightingMode: 0
++    m_EnableBakedLightmaps: 0
++    m_EnableRealtimeLightmaps: 0
++  m_LightmapEditorSettings:
++    serializedVersion: 12
++    m_Resolution: 2
++    m_BakeResolution: 40
++    m_AtlasSize: 1024
++    m_AO: 0
++    m_AOMaxDistance: 1
++    m_CompAOExponent: 1
++    m_CompAOExponentDirect: 0
++    m_ExtractAmbientOcclusion: 0
++    m_Padding: 2
++    m_LightmapParameters: {fileID: 0}
++    m_LightmapsBakeMode: 1
++    m_TextureCompression: 1
++    m_ReflectionCompression: 2
++    m_MixedBakeMode: 2
++    m_BakeBackend: 1
++    m_PVRSampling: 1
++    m_PVRDirectSampleCount: 32
++    m_PVRSampleCount: 512
++    m_PVRBounces: 2
++    m_PVREnvironmentSampleCount: 256
++    m_PVREnvironmentReferencePointCount: 2048
++    m_PVRFilteringMode: 1
++    m_PVRDenoiserTypeDirect: 1
++    m_PVRDenoiserTypeIndirect: 1
++    m_PVRDenoiserTypeAO: 1
++    m_PVRFilterTypeDirect: 0
++    m_PVRFilterTypeIndirect: 0
++    m_PVRFilterTypeAO: 0
++    m_PVREnvironmentMIS: 1
++    m_PVRCulling: 1
++    m_PVRFilteringGaussRadiusDirect: 1
++    m_PVRFilteringGaussRadiusIndirect: 5
++    m_PVRFilteringGaussRadiusAO: 2
++    m_PVRFilteringAtrousPositionSigmaDirect: 0.5
++    m_PVRFilteringAtrousPositionSigmaIndirect: 2
++    m_PVRFilteringAtrousPositionSigmaAO: 1
++    m_ExportTrainingData: 0
++    m_TrainingDataDestination: TrainingData
++    m_LightProbeSampleCountMultiplier: 4
++  m_LightingDataAsset: {fileID: 0}
++  m_LightingSettings: {fileID: 0}
++--- !u!196 &4
++NavMeshSettings:
++  serializedVersion: 2
++  m_ObjectHideFlags: 0
++  m_BuildSettings:
++    serializedVersion: 3
++    agentTypeID: 0
++    agentRadius: 0.5
++    agentHeight: 2
++    agentSlope: 45
++    agentClimb: 0.4
++    ledgeDropHeight: 0
++    maxJumpAcrossDistance: 0
++    minRegionArea: 2
++    manualCellSize: 0
++    cellSize: 0.16666667
++    manualTileSize: 0
++    tileSize: 256
++    buildHeightMesh: 0
++    maxJobWorkers: 0
++    preserveTilesOutsideBounds: 0
++    debug:
++      m_Flags: 0
++  m_NavMeshData: {fileID: 0}
++--- !u!1 &102030405
++GameObject:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  serializedVersion: 6
++  m_Component:
++  - component: {fileID: 102030408}
++  - component: {fileID: 102030407}
++  - component: {fileID: 102030406}
++  m_Layer: 0
++  m_Name: Main Camera
++  m_TagString: MainCamera
++  m_Icon: {fileID: 0}
++  m_NavMeshLayer: 0
++  m_StaticEditorFlags: 0
++  m_IsActive: 1
++--- !u!81 &102030406
++AudioListener:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 102030405}
++  m_Enabled: 1
++--- !u!20 &102030407
++Camera:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 102030405}
++  m_Enabled: 1
++  serializedVersion: 2
++  m_ClearFlags: 1
++  m_BackGroundColor: {r: 0.14, g: 0.16, b: 0.19, a: 0}
++  m_projectionMatrixMode: 1
++  m_GateFitMode: 2
++  m_FOVAxisMode: 0
++  m_Iso: 200
++  m_ShutterSpeed: 0.005
++  m_Aperture: 16
++  m_FocusDistance: 10
++  m_FocalLength: 50
++  m_BladeCount: 5
++  m_Curvature: {x: 2, y: 11}
++  m_BarrelClipping: 0.25
++  m_Anamorphism: 0
++  m_SensorSize: {x: 36, y: 24}
++  m_LensShift: {x: 0, y: 0}
++  m_NormalizedViewPortRect:
++    serializedVersion: 2
++    x: 0
++    y: 0
++    width: 1
++    height: 1
++  near clip plane: 0.3
++  far clip plane: 1000
++  field of view: 60
++  orthographic: 1
++  orthographic size: 5
++  m_Depth: -1
++  m_CullingMask:
++    serializedVersion: 2
++    m_Bits: 4294967295
++  m_RenderingPath: -1
++  m_TargetTexture: {fileID: 0}
++  m_TargetDisplay: 0
++  m_TargetEye: 3
++  m_HDR: 1
++  m_AllowMSAA: 1
++  m_AllowDynamicResolution: 0
++  m_ForceIntoRT: 0
++  m_OcclusionCulling: 1
++  m_StereoConvergence: 10
++  m_StereoSeparation: 0.022
++--- !u!4 &102030408
++Transform:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 102030405}
++  serializedVersion: 2
++  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
++  m_LocalPosition: {x: 0, y: 0, z: -10}
++  m_LocalScale: {x: 1, y: 1, z: 1}
++  m_ConstrainProportionsScale: 0
++  m_Children: []
++  m_Father: {fileID: 0}
++  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
++--- !u!1 &223344550
++GameObject:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  serializedVersion: 6
++  m_Component:
++  - component: {fileID: 223344551}
++  - component: {fileID: 223344552}
++  m_Layer: 0
++  m_Name: WormEnemy
++  m_TagString: Untagged
++  m_Icon: {fileID: 0}
++  m_NavMeshLayer: 0
++  m_StaticEditorFlags: 0
++  m_IsActive: 1
++--- !u!4 &223344551
++Transform:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 223344550}
++  serializedVersion: 2
++  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
++  m_LocalPosition: {x: -6, y: 0, z: 0}
++  m_LocalScale: {x: 1, y: 1, z: 1}
++  m_ConstrainProportionsScale: 0
++  m_Children: []
++  m_Father: {fileID: 0}
++  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
++--- !u!114 &223344552
++MonoBehaviour:
++  m_ObjectHideFlags: 0
++  m_CorrespondingSourceObject: {fileID: 0}
++  m_PrefabInstance: {fileID: 0}
++  m_PrefabAsset: {fileID: 0}
++  m_GameObject: {fileID: 223344550}
++  m_Enabled: 1
++  m_EditorHideFlags: 0
++  m_Script: {fileID: 11500000, guid: 7ea74dd5451f44f099f699a879f68d84, type: 3}
++  m_Name: 
++  m_EditorClassIdentifier: 
++  _headPrefab: {fileID: 11400000, guid: 4425dcb5606e4952912f30e481a76e1f, type: 3}
++  _segmentPrefab: {fileID: 11400000, guid: 7b70e5e379fe48e1bc88ea789e5df3ce, type: 3}
++  _initialSegmentCount: 8
++  _headMaxHp: 700
++  _segmentBaseHp: 140
++  _segmentHpStep: 30
++  _segmentSpacing: 0.9
++  _spawnOnStart: 1
++  _headDirection: {x: 1, y: 0}
++  _headSpeed: 1.8
++  _waveAmplitude: 1.1
++  _waveFrequency: 1.8
++  _trailStep: 0.15
++  _followLerpSpeed: 20
++--- !u!1660057539 &9223372036854775807
++SceneRoots:
++  m_ObjectHideFlags: 0
++  m_Roots:
++  - {fileID: 102030408}
++  - {fileID: 223344551}
+diff --git a/Assets/_Project/Enemies/Worm/Scenes/Dev_WormTest.unity.meta b/Assets/_Project/Enemies/Worm/Scenes/Dev_WormTest.unity.meta
+new file mode 100644
+index 0000000..551dba5
+--- /dev/null
++++ b/Assets/_Project/Enemies/Worm/Scenes/Dev_WormTest.unity.meta
+@@ -0,0 +1,7 @@
++fileFormatVersion: 2
++guid: bdb2543c4d6b43c8a4f61d37f0ea0d6c
++DefaultImporter:
++  externalObjects: {}
++  userData: 
++  assetBundleName: 
++  assetBundleVariant: 

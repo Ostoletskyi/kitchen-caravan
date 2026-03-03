@@ -1,0 +1,7 @@
+# --- DevOps / local tooling ---
+.dotnet/
+.dotnet_home/
+_dev/codex/
+_dev/logs/
+_logs/
+.gitconfig-local
