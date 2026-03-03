@@ -1,0 +1,26 @@
+You are a senior Unity/C# engineer. Work strictly inside this repository.
+Goal: fix the compile error without breaking project architecture.
+
+Error:
+Assets\Editor\ProjectBootstrap.cs(31,12): error CS1061: 'GameManager' does not contain a definition for 'config' and no accessible extension method 'config' accepting a first argument of type 'GameManager' could be found (are you missing a using directive or an assembly reference?)
+
+Rules:
+- Do NOT invent APIs. Only use symbols that exist in the repo.
+- Prefer minimal changes (smallest diff).
+- Keep behavior backward-compatible.
+- If multiple fixes are possible, choose the one that matches existing patterns in the codebase.
+
+Task:
+1) Open and analyze:
+   - the file(s) mentioned in the error (line + context)
+   - the relevant type(s) (search for class definition)
+   - related configuration/types by searching repo for keywords from the error
+2) Explain root cause briefly.
+3) Implement the correct fix (prefer updating callers to current API; only add public wrappers if config exists internally).
+4) Ensure the project compiles (no new errors).
+5) Output:
+   - unified diff
+   - short explanation
+
+Extra notes:
+Source: Unity Editor log (C:\Users\ostol\AppData\Local\Unity\Editor\Editor.log).

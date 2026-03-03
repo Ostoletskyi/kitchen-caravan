@@ -17,7 +17,7 @@ public static class ProjectBootstrap
         EnsureFolder("Assets", "Scenes");
 
         // 2) Create ScriptableObject assets (пример)
-        var gameConfig = CreateOrLoadSO<GameConfigSO>("Assets/Configs/SO/GameConfig.asset");
+        CreateOrLoadSO<GameConfigSO>("Assets/Configs/SO/GameConfig.asset");
 
         // 3) Create scene
         var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
@@ -27,8 +27,7 @@ public static class ProjectBootstrap
 
         var gmGO = new GameObject("GameManager");
         gmGO.transform.SetParent(root.transform);
-        var gm = gmGO.AddComponent<GameManager>();
-        gm.config = gameConfig; // <-- связь
+        gmGO.AddComponent<GameManager>();
 
         var chainGO = new GameObject("ChainController");
         chainGO.transform.SetParent(root.transform);

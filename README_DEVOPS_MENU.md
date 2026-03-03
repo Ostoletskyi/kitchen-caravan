@@ -1,18 +1,25 @@
-# KitchenCaravan DevOps Menu + Codex CLI (Drop-in)
+# KitchenCaravan DevOps Menu (Bootstrap)
 
 ## Install
-Unzip into: `C:\Projects\KitchenCaravan` (overwrite existing files)
+Unzip into: C:\Projects\KitchenCaravan (overwrite existing files)
 
-## Menu (English)
+## Menu
 1) Push
 2) Pull --rebase
-3) Start Work
+3) Start Work (bootstrap checks + open tools + open Codex)
 4) Conflict Helper
 5) Status
-6) Codex CLI Mode
 0) Exit
 
-## Fixes in this build
-- Adds option 6 to the menu (Codex CLI Mode)
-- Fixes Start Work failing under strict mode when parameters were not bound
-- Improves Visual Studio detection with common fixed devenv.exe paths + vswhere fallback
+## Note
+Option 3 runs _dev\scripts\bootstrap_start.ps1. It checks tools and prints install suggestions (winget/choco),
+then opens Explorer, PowerShell in project root, Unity Hub, Visual Studio (if detected), and finally opens a guided Codex shell.
+
+
+## Codex prompt helper
+In the Codex window, choose option 2 to build a ready-to-paste Codex prompt from a compiler error. It saves the prompt under _dev\codex\ and copies it to clipboard.
+
+
+## Unity Editor.log prompt
+In the Codex window, choose option 6 to auto-build a Codex prompt from the latest compile errors found in Unity Editor.log.
+Default path: %LOCALAPPDATA%\Unity\Editor\Editor.log

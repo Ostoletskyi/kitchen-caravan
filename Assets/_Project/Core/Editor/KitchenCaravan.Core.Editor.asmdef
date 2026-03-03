@@ -1,0 +1,10 @@
+{
+  "name": "KitchenCaravan.Core.Editor",
+  "references": [
+    "KitchenCaravan.Core.Runtime",
+    "UnityEditor"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ]
+}

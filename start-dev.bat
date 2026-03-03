@@ -39,10 +39,9 @@ echo Log: %LOG_FILE%
 echo ===============================================
 echo 1) Push (commit first if needed)
 echo 2) Pull --rebase (sync)
-echo 3) Start Work (open tools + Unity + VS)
+echo 3) Start Work (bootstrap + tools + Codex + prompt helper)
 echo 4) Conflict Helper (continue/abort/mergetool)
 echo 5) Status (git status + last commits)
-echo 6) Codex CLI Mode
 echo 0) Exit
 echo ===============================================
 set /p CHOICE=Select an option: 
@@ -52,7 +51,6 @@ if "%CHOICE%"=="2" goto PULLREBASE
 if "%CHOICE%"=="3" goto STARTWORK
 if "%CHOICE%"=="4" goto CONFLICT
 if "%CHOICE%"=="5" goto STATUS
-if "%CHOICE%"=="6" goto CODEX
 if "%CHOICE%"=="0" goto END
 
 echo Invalid choice.
@@ -91,19 +89,12 @@ powershell -NoProfile -Command "Get-Content -Path '%LOG_FILE%' -Tail 30"
 pause
 goto MENU
 
-:CODEX
-echo [INFO] CODEX >> "%LOG_FILE%"
-REM Run Codex menu interactively (no output redirection) in a separate window
-start "Codex CLI" powershell -NoProfile -ExecutionPolicy Bypass -NoExit -File "%SCRIPTS%\codex_cli.ps1" -ProjectRoot "%PROJECT_ROOT%"
-echo [INFO] Codex CLI window started. >> "%LOG_FILE%"
-pause
-goto MENU
-
 :STARTWORK
 echo [INFO] STARTWORK >> "%LOG_FILE%"
-powershell -NoProfile -ExecutionPolicy Bypass -File "%SCRIPTS%\start_work.ps1" -ProjectRoot "%PROJECT_ROOT%" 1>> "%LOG_FILE%" 2>>&1
+REM One-button bootstrap: tool checks + suggestions + open tools + open Codex window
+powershell -NoProfile -ExecutionPolicy Bypass -File "%SCRIPTS%\bootstrap_start.ps1" -ProjectRoot "%PROJECT_ROOT%" -LogFile "%LOG_FILE%"
 echo --- Last lines of log ---
-powershell -NoProfile -Command "Get-Content -Path '%LOG_FILE%' -Tail 35"
+powershell -NoProfile -Command "Get-Content -Path '%LOG_FILE%' -Tail 80"
 pause
 goto MENU
 
