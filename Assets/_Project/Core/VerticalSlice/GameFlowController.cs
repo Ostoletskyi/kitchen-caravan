@@ -34,7 +34,7 @@ namespace KitchenCaravan.VerticalSlice
 
             if (_enemySpawner == null)
             {
-                _enemySpawner = FindObjectOfType<EnemySpawner>();
+                _enemySpawner = FindFirstObjectByType<EnemySpawner>();
             }
 
             if (_enemySpawner != null)
@@ -44,7 +44,7 @@ namespace KitchenCaravan.VerticalSlice
 
             if (_hud == null)
             {
-                _hud = FindObjectOfType<UIHudController>();
+                _hud = FindFirstObjectByType<UIHudController>();
             }
 
             if (_hud != null)

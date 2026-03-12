@@ -34,7 +34,7 @@ namespace KitchenCaravan.VerticalSlice
 
         private void EnsureMenuCanvas()
         {
-            if (FindObjectOfType<Canvas>() != null)
+            if (FindAnyObjectByType<Canvas>() != null)
             {
                 return;
             }

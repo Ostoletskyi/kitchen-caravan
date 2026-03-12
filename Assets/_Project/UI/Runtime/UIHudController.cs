@@ -15,7 +15,7 @@ namespace KitchenCaravan.VerticalSlice
         {
             if (_flow == null)
             {
-                _flow = FindObjectOfType<GameFlowController>();
+                _flow = FindFirstObjectByType<GameFlowController>();
             }
 
             if (_flow != null)
@@ -186,7 +186,7 @@ namespace KitchenCaravan.VerticalSlice
 
         public static void EnsureEventSystem()
         {
-            if (FindObjectOfType<EventSystem>() != null)
+            if (FindAnyObjectByType<EventSystem>() != null)
             {
                 return;
             }
