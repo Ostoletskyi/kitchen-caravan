@@ -21,26 +21,29 @@ namespace KitchenCaravan.VerticalSlice
             _hp = _maxHp;
             _phase = Random.Range(0f, Mathf.PI * 2f);
             _baseX = transform.position.x;
-            EnsureComponents();
+            EnsurePhysicsComponents();
+        }
+
+        private void Start()
+        {
+            EnsureVisualComponents();
         }
 
         private void OnValidate()
         {
-            EnsureComponents();
+            _maxHp = Mathf.Max(1, _maxHp);
         }
 
-        private void EnsureComponents()
+        private void EnsureVisualComponents()
         {
-            if (_hp <= 0)
-            {
-                _hp = _maxHp;
-            }
-
             var sr = GetComponent<SpriteRenderer>();
             sr.sprite = RuntimeSpriteFactory.WhiteSquare;
             sr.color = new Color(1f, 0.35f, 0.35f, 1f);
             transform.localScale = new Vector3(0.85f, 0.85f, 1f);
+        }
 
+        private void EnsurePhysicsComponents()
+        {
             var collider = GetComponent<BoxCollider2D>();
             if (collider == null)
             {

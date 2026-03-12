@@ -71,7 +71,7 @@ namespace KitchenCaravan.VerticalSlice
             label.alignment = TextAnchor.MiddleCenter;
             label.fontSize = size;
             label.color = Color.white;
-            label.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            label.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         }
 
         private static void CreateButton(Transform parent, string name, string text, Vector2 pos, UnityEngine.Events.UnityAction onClick)
@@ -106,7 +106,7 @@ namespace KitchenCaravan.VerticalSlice
             textComp.alignment = TextAnchor.MiddleCenter;
             textComp.fontSize = 36;
             textComp.color = Color.white;
-            textComp.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            textComp.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
         }
     }
 }

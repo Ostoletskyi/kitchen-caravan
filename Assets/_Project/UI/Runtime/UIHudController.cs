@@ -113,7 +113,7 @@ namespace KitchenCaravan.VerticalSlice
             rt.anchoredPosition = pos;
 
             var textComp = go.GetComponent<Text>();
-            textComp.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            textComp.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             textComp.fontSize = fontSize;
             textComp.alignment = anchor;
             textComp.color = Color.white;

@@ -77,7 +77,7 @@ namespace KitchenCaravan.Editor
             GameObject textObject = new GameObject("HUD_Text");
             textObject.transform.SetParent(hudObject.transform, false);
             Text text = textObject.AddComponent<Text>();
-            text.font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             text.alignment = TextAnchor.UpperLeft;
             text.fontSize = 14;
             text.horizontalOverflow = HorizontalWrapMode.Overflow;
