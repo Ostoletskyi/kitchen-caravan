@@ -13,6 +13,9 @@ namespace KitchenCaravan.VerticalSlice
         private CaravanRuntimeSettings _settings;
         private float _elapsed;
         private float _originX;
+        private int _routeSegmentIndex;
+        private Vector3 _fallbackForward = Vector3.down;
+        private readonly List<Vector3> _routePoints = new List<Vector3>();
         private bool _configured;
         private bool _destroyedRaised;
         private bool _captainKilled;
@@ -100,16 +103,21 @@ namespace KitchenCaravan.VerticalSlice
             ClearChildren();
             _segments.Clear();
             _trail.Clear();
+            _routePoints.Clear();
             _elapsed = 0f;
             _originX = transform.position.x;
+            _routeSegmentIndex = 0;
+
+            CacheRoutePoints();
+            EnsureFallbackDirection();
 
             GameObject captainObject = new GameObject("CaptainHead");
             captainObject.transform.SetParent(transform, false);
-            captainObject.transform.position = transform.position;
+            captainObject.transform.position = GetSpawnPosition();
             _captain = captainObject.AddComponent<CaptainHead>();
             _captain.Initialize(this, Mathf.Max(1, _settings.captainHp));
 
-            int chainLength = Mathf.Max(1, _settings.chainLength);
+            int chainLength = Mathf.Clamp(_settings.chainLength, 1, 100);
             int baseHp = Mathf.Max(1, _settings.segmentBaseHp);
             int increment = Mathf.Max(0, _settings.segmentHpIncrement);
             float spacing = Mathf.Max(0.3f, _settings.segmentSpacing);
@@ -119,7 +127,7 @@ namespace KitchenCaravan.VerticalSlice
                 int hp = baseHp + (increment * i);
                 GameObject segmentObject = new GameObject($"Segment_{i + 1:00}");
                 segmentObject.transform.SetParent(transform, false);
-                segmentObject.transform.position = transform.position + (Vector3.up * spacing * (i + 1));
+                segmentObject.transform.position = _captain.transform.position - (_fallbackForward * spacing * (i + 1));
 
                 CaravanSegment segment = segmentObject.AddComponent<CaravanSegment>();
                 segment.Initialize(this, hp, i);
@@ -131,17 +139,105 @@ namespace KitchenCaravan.VerticalSlice
 
         private void TickCaptainMotion()
         {
-            _elapsed += Time.deltaTime;
             Vector3 pos = _captain.transform.position;
-            pos.y -= Mathf.Max(0.1f, _settings.moveSpeed) * Time.deltaTime;
-            pos.x = _originX + Mathf.Sin(_elapsed * Mathf.Max(0f, _settings.swayFrequency)) * Mathf.Max(0f, _settings.swayAmplitude);
-            _captain.transform.position = pos;
+            if (_routePoints.Count >= 2)
+            {
+                pos = MoveAlongRoute(pos, Mathf.Max(0.1f, _settings.moveSpeed) * Time.deltaTime);
+                _captain.transform.position = pos;
+            }
+            else
+            {
+                _elapsed += Time.deltaTime;
+                pos.y -= Mathf.Max(0.1f, _settings.moveSpeed) * Time.deltaTime;
+                pos.x = _originX + Mathf.Sin(_elapsed * Mathf.Max(0f, _settings.swayFrequency)) * Mathf.Max(0f, _settings.swayAmplitude);
+                _captain.transform.position = pos;
+            }
 
             float despawnY = -9f;
             if (pos.y < despawnY)
             {
                 Destroy(gameObject);
             }
+        }
+
+        private void CacheRoutePoints()
+        {
+            if (_settings.routeData == null || _settings.routeData.Points == null)
+            {
+                return;
+            }
+
+            var points = _settings.routeData.Points;
+            for (int i = 0; i < points.Count; i++)
+            {
+                _routePoints.Add(points[i]);
+            }
+        }
+
+        private Vector3 GetSpawnPosition()
+        {
+            if (_routePoints.Count > 0)
+            {
+                return _routePoints[0];
+            }
+
+            return transform.position;
+        }
+
+        private void EnsureFallbackDirection()
+        {
+            if (_routePoints.Count >= 2)
+            {
+                _fallbackForward = (_routePoints[1] - _routePoints[0]).normalized;
+                if (_fallbackForward.sqrMagnitude <= 0.001f)
+                {
+                    _fallbackForward = Vector3.down;
+                }
+                return;
+            }
+
+            _fallbackForward = Vector3.down;
+        }
+
+        private Vector3 MoveAlongRoute(Vector3 currentPosition, float moveDistance)
+        {
+            if (_routePoints.Count < 2)
+            {
+                return currentPosition;
+            }
+
+            float remaining = Mathf.Max(0f, moveDistance);
+            Vector3 position = currentPosition;
+
+            while (remaining > 0f && _routeSegmentIndex < _routePoints.Count - 1)
+            {
+                Vector3 target = _routePoints[_routeSegmentIndex + 1];
+                float distanceToTarget = Vector3.Distance(position, target);
+                if (distanceToTarget <= 0.0001f)
+                {
+                    _routeSegmentIndex++;
+                    continue;
+                }
+
+                if (remaining < distanceToTarget)
+                {
+                    position = Vector3.MoveTowards(position, target, remaining);
+                    remaining = 0f;
+                }
+                else
+                {
+                    position = target;
+                    remaining -= distanceToTarget;
+                    _routeSegmentIndex++;
+                }
+            }
+
+            if (_routeSegmentIndex >= _routePoints.Count - 1)
+            {
+                Destroy(gameObject);
+            }
+
+            return position;
         }
 
         private void UpdateTrail()

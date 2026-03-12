@@ -19,7 +19,6 @@ namespace KitchenCaravan.VerticalSlice
         {
             _camera = Camera.main;
             EnsurePhysicsComponents();
-            BalanceDebugSettings.EnsureDefaults();
         }
 
         private void Start()
@@ -81,7 +80,7 @@ namespace KitchenCaravan.VerticalSlice
             }
 
             float move = Input.GetAxisRaw("Horizontal");
-            float effectiveMoveSpeed = BalanceDebugSettings.PlayerMoveSpeed > 0f ? BalanceDebugSettings.PlayerMoveSpeed : _moveSpeed;
+            float effectiveMoveSpeed = LevelRuntimeSettings.PlayerMoveSpeed > 0f ? LevelRuntimeSettings.PlayerMoveSpeed : _moveSpeed;
             float desiredX = transform.position.x + (move * effectiveMoveSpeed * Time.deltaTime);
 
             if (_pointerTargeting && Mathf.Approximately(move, 0f))

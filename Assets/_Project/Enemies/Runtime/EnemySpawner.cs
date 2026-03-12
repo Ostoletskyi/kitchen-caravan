@@ -9,26 +9,10 @@ namespace KitchenCaravan.VerticalSlice
         [SerializeField] private float _spawnY = 6f;
         [SerializeField] private float _minX = -7.5f;
         [SerializeField] private float _maxX = 7.5f;
-        [Header("Caravan Defaults")]
-        [SerializeField] private int _defaultChainLength = 6;
-        [SerializeField] private int _defaultSegmentBaseHp = 3;
-        [SerializeField] private int _defaultSegmentHpIncrement = 2;
-        [SerializeField] private int _defaultCaptainHp = 12;
-        [SerializeField] private float _defaultChainSpeed = 1.8f;
-        [SerializeField] private float _defaultSpacing = 0.9f;
-        [SerializeField] private float _defaultSwayAmplitude = 1f;
-        [SerializeField] private float _defaultSwayFrequency = 1.2f;
-        [SerializeField] private float _defaultFollowLerpSpeed = 16f;
-        [SerializeField] private float _defaultTrailStep = 0.14f;
 
         private float _nextSpawn;
         private GameFlowController _flow;
         private readonly List<CaravanController> _activeCaravans = new List<CaravanController>();
-
-        private void Awake()
-        {
-            BalanceDebugSettings.EnsureDefaults();
-        }
 
         public void Configure(GameFlowController flow)
         {
@@ -47,15 +31,14 @@ namespace KitchenCaravan.VerticalSlice
                 return;
             }
 
-            float delay = BalanceDebugSettings.ChainSpawnDelay > 0f ? BalanceDebugSettings.ChainSpawnDelay : _spawnInterval;
+            float delay = LevelRuntimeSettings.SpawnDelay > 0f ? LevelRuntimeSettings.SpawnDelay : _spawnInterval;
             _nextSpawn = Time.time + Mathf.Max(0.1f, delay);
             SpawnOne();
         }
 
         private void SpawnOne()
         {
-            float x = Random.Range(_minX, _maxX);
-            Vector3 pos = new Vector3(x, _spawnY, 0f);
+            Vector3 pos = GetSpawnPosition();
 
             var caravanObject = new GameObject($"Caravan_{Time.frameCount}");
             caravanObject.transform.position = pos;
@@ -64,16 +47,17 @@ namespace KitchenCaravan.VerticalSlice
             var caravan = caravanObject.AddComponent<CaravanController>();
             caravan.Configure(new CaravanRuntimeSettings
             {
-                chainLength = BalanceDebugSettings.ChainLength > 0 ? BalanceDebugSettings.ChainLength : _defaultChainLength,
-                segmentBaseHp = BalanceDebugSettings.ChainSegmentBaseHp > 0 ? BalanceDebugSettings.ChainSegmentBaseHp : _defaultSegmentBaseHp,
-                segmentHpIncrement = BalanceDebugSettings.ChainSegmentHpIncrement >= 0 ? BalanceDebugSettings.ChainSegmentHpIncrement : _defaultSegmentHpIncrement,
-                captainHp = Mathf.Max(1, _defaultCaptainHp),
-                moveSpeed = BalanceDebugSettings.ChainMoveSpeed > 0f ? BalanceDebugSettings.ChainMoveSpeed : _defaultChainSpeed,
-                segmentSpacing = _defaultSpacing,
-                swayAmplitude = _defaultSwayAmplitude,
-                swayFrequency = _defaultSwayFrequency,
-                followLerpSpeed = _defaultFollowLerpSpeed,
-                trailStep = _defaultTrailStep
+                chainLength = Mathf.Clamp(LevelRuntimeSettings.ChainLength, 1, 100),
+                segmentBaseHp = LevelRuntimeSettings.SegmentBaseHp,
+                segmentHpIncrement = LevelRuntimeSettings.SegmentHpIncrement,
+                captainHp = LevelRuntimeSettings.CaptainHp,
+                moveSpeed = LevelRuntimeSettings.ChainMoveSpeed,
+                segmentSpacing = LevelRuntimeSettings.SegmentSpacing,
+                swayAmplitude = LevelRuntimeSettings.SwayAmplitude,
+                swayFrequency = LevelRuntimeSettings.SwayFrequency,
+                followLerpSpeed = LevelRuntimeSettings.FollowLerpSpeed,
+                trailStep = LevelRuntimeSettings.TrailStep,
+                routeData = LevelRuntimeSettings.RouteData
             });
 
             caravan.Destroyed += OnCaravanDestroyed;
@@ -103,6 +87,18 @@ namespace KitchenCaravan.VerticalSlice
                     _activeCaravans.RemoveAt(i);
                 }
             }
+        }
+
+        private Vector3 GetSpawnPosition()
+        {
+            var route = LevelRuntimeSettings.RouteData;
+            if (route != null && route.Points != null && route.Points.Count > 0)
+            {
+                return route.Points[0];
+            }
+
+            float x = Random.Range(_minX, _maxX);
+            return new Vector3(x, _spawnY, 0f);
         }
     }
 }

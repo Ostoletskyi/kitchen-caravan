@@ -88,7 +88,7 @@ namespace KitchenCaravan.VerticalSlice
 
         private int GetDamage()
         {
-            return Mathf.Max(1, BalanceDebugSettings.BulletDamage > 0 ? BalanceDebugSettings.BulletDamage : _damage);
+            return Mathf.Max(1, LevelRuntimeSettings.BulletDamage > 0 ? LevelRuntimeSettings.BulletDamage : _damage);
         }
     }
 }

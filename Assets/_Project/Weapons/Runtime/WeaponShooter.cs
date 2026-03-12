@@ -12,11 +12,6 @@ namespace KitchenCaravan.VerticalSlice
 
         private float _nextShotTime;
 
-        private void Awake()
-        {
-            BalanceDebugSettings.EnsureDefaults();
-        }
-
         private void Update()
         {
             if (_autoFire)
@@ -32,7 +27,7 @@ namespace KitchenCaravan.VerticalSlice
                 return;
             }
 
-            float effectiveFireRate = BalanceDebugSettings.PlayerFireRate;
+            float effectiveFireRate = LevelRuntimeSettings.PlayerFireRate;
             if (effectiveFireRate <= 0f)
             {
                 effectiveFireRate = Mathf.Max(0.01f, _fireRate);

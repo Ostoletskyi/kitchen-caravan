@@ -12,5 +12,6 @@ namespace KitchenCaravan.VerticalSlice
         public float swayFrequency;
         public float followLerpSpeed;
         public float trailStep;
+        public EnemyRouteData routeData;
     }
 }

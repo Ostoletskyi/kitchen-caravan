@@ -13,6 +13,7 @@ namespace KitchenCaravan.VerticalSlice
         }
 
         [SerializeField] private int _targetDefeats = 20;
+        [SerializeField] private LevelConfig _levelConfig;
         [SerializeField] private EnemySpawner _enemySpawner;
         [SerializeField] private UIHudController _hud;
         [SerializeField] private string _mainMenuScene = "MainMenu";
@@ -26,7 +27,7 @@ namespace KitchenCaravan.VerticalSlice
 
         private void Awake()
         {
-            BalanceDebugSettings.EnsureDefaults();
+            LevelRuntimeSettings.Apply(_levelConfig);
             Time.timeScale = 1f;
             State = FlowState.Playing;
             DefeatedCount = 0;
@@ -50,8 +51,6 @@ namespace KitchenCaravan.VerticalSlice
             {
                 _hud.Bind(this);
             }
-
-            EnsureDebugPanel();
         }
 
         public void RegisterEnemyDefeated()
@@ -106,15 +105,5 @@ namespace KitchenCaravan.VerticalSlice
             _hud = hud;
         }
 
-        private static void EnsureDebugPanel()
-        {
-            if (FindObjectOfType<BalanceDebugPanel>() != null)
-            {
-                return;
-            }
-
-            var go = new GameObject("BalanceDebugPanel");
-            go.AddComponent<BalanceDebugPanel>();
-        }
     }
 }
