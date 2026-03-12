@@ -5,11 +5,25 @@ namespace KitchenCaravan.VerticalSlice
     public class WeaponShooter : MonoBehaviour
     {
         [SerializeField] private Bullet _bulletPrefab;
-        [SerializeField] private float _fireRate = 5f;
+        [SerializeField] private float _fireRate = 2f;
         [SerializeField] private float _bulletSpeed = 12f;
         [SerializeField] private Vector3 _muzzleOffset = new Vector3(0f, 0.8f, 0f);
+        [SerializeField] private bool _autoFire = true;
 
         private float _nextShotTime;
+
+        private void Awake()
+        {
+            BalanceDebugSettings.EnsureDefaults();
+        }
+
+        private void Update()
+        {
+            if (_autoFire)
+            {
+                TryShoot();
+            }
+        }
 
         public void TryShoot()
         {
@@ -18,7 +32,13 @@ namespace KitchenCaravan.VerticalSlice
                 return;
             }
 
-            _nextShotTime = Time.time + (1f / Mathf.Max(0.01f, _fireRate));
+            float effectiveFireRate = BalanceDebugSettings.PlayerFireRate;
+            if (effectiveFireRate <= 0f)
+            {
+                effectiveFireRate = Mathf.Max(0.01f, _fireRate);
+            }
+
+            _nextShotTime = Time.time + (1f / Mathf.Max(0.01f, effectiveFireRate));
 
             if (_bulletPrefab != null)
             {
@@ -36,6 +56,11 @@ namespace KitchenCaravan.VerticalSlice
         public void SetBulletPrefab(Bullet prefab)
         {
             _bulletPrefab = prefab;
+        }
+
+        public void SetAutoFire(bool enabled)
+        {
+            _autoFire = enabled;
         }
     }
 }

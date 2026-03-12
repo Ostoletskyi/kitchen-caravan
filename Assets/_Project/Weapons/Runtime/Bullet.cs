@@ -70,13 +70,25 @@ namespace KitchenCaravan.VerticalSlice
 
         private void OnTriggerEnter2D(Collider2D other)
         {
+            if (other.TryGetComponent(out ICaravanDamageable caravanDamageable))
+            {
+                caravanDamageable.ApplyDamage(GetDamage());
+                Destroy(gameObject);
+                return;
+            }
+
             if (!other.TryGetComponent(out Enemy enemy))
             {
                 return;
             }
 
-            enemy.ApplyDamage(_damage);
+            enemy.ApplyDamage(GetDamage());
             Destroy(gameObject);
+        }
+
+        private int GetDamage()
+        {
+            return Mathf.Max(1, BalanceDebugSettings.BulletDamage > 0 ? BalanceDebugSettings.BulletDamage : _damage);
         }
     }
 }

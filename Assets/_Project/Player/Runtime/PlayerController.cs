@@ -7,36 +7,51 @@ namespace KitchenCaravan.VerticalSlice
     public class PlayerController : MonoBehaviour
     {
         [SerializeField] private float _moveSpeed = 8f;
-        [SerializeField] private float _padding = 0.6f;
+        [SerializeField] private float _horizontalPadding = 0.6f;
+        [SerializeField] private float _bottomPadding = 0.9f;
+        [SerializeField] private bool _pointerTargeting = true;
 
-        private WeaponShooter _weapon;
         private Camera _camera;
+        private float _targetY;
+        private bool _hasTargetY;
 
         private void Awake()
         {
-            _weapon = GetComponent<WeaponShooter>();
             _camera = Camera.main;
-            EnsureComponents();
+            EnsurePhysicsComponents();
+            BalanceDebugSettings.EnsureDefaults();
+        }
+
+        private void Start()
+        {
+            EnsureVisualComponents();
+            EnsureBottomLaneY();
         }
 
         private void OnValidate()
         {
-            EnsureComponents();
+            _moveSpeed = Mathf.Max(0.1f, _moveSpeed);
+            _horizontalPadding = Mathf.Max(0f, _horizontalPadding);
+            _bottomPadding = Mathf.Max(0.1f, _bottomPadding);
         }
 
-        private void EnsureComponents()
+        private void EnsureVisualComponents()
         {
             var sr = GetComponent<SpriteRenderer>();
             sr.sprite = RuntimeSpriteFactory.WhiteSquare;
             sr.color = new Color(0.35f, 0.85f, 1f, 1f);
             transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+        }
 
+        private void EnsurePhysicsComponents()
+        {
             var collider = GetComponent<BoxCollider2D>();
             if (collider == null)
             {
                 collider = gameObject.AddComponent<BoxCollider2D>();
-                collider.size = Vector2.one;
             }
+
+            collider.size = Vector2.one;
 
             var body = GetComponent<Rigidbody2D>();
             if (body == null)
@@ -50,17 +65,11 @@ namespace KitchenCaravan.VerticalSlice
 
         private void Update()
         {
-            float move = Input.GetAxisRaw("Horizontal");
-            transform.position += Vector3.right * (move * _moveSpeed * Time.deltaTime);
-            ClampToViewport();
-
-            if (Input.GetKey(KeyCode.Space))
-            {
-                _weapon.TryShoot();
-            }
+            EnsureBottomLaneY();
+            HandleHorizontalMove();
         }
 
-        private void ClampToViewport()
+        private void HandleHorizontalMove()
         {
             if (_camera == null)
             {
@@ -71,11 +80,61 @@ namespace KitchenCaravan.VerticalSlice
                 }
             }
 
+            float move = Input.GetAxisRaw("Horizontal");
+            float effectiveMoveSpeed = BalanceDebugSettings.PlayerMoveSpeed > 0f ? BalanceDebugSettings.PlayerMoveSpeed : _moveSpeed;
+            float desiredX = transform.position.x + (move * effectiveMoveSpeed * Time.deltaTime);
+
+            if (_pointerTargeting && Mathf.Approximately(move, 0f))
+            {
+                if (TryGetPointerWorldX(out float pointerX))
+                {
+                    desiredX = Mathf.MoveTowards(transform.position.x, pointerX, effectiveMoveSpeed * Time.deltaTime);
+                }
+            }
+
             float halfWidth = _camera.orthographicSize * _camera.aspect;
-            float minX = -halfWidth + _padding;
-            float maxX = halfWidth - _padding;
-            float clampedX = Mathf.Clamp(transform.position.x, minX, maxX);
-            transform.position = new Vector3(clampedX, transform.position.y, 0f);
+            float minX = -halfWidth + _horizontalPadding;
+            float maxX = halfWidth - _horizontalPadding;
+            float clampedX = Mathf.Clamp(desiredX, minX, maxX);
+            transform.position = new Vector3(clampedX, _targetY, 0f);
+        }
+
+        private bool TryGetPointerWorldX(out float worldX)
+        {
+            worldX = 0f;
+
+            if (Input.touchCount > 0)
+            {
+                worldX = _camera.ScreenToWorldPoint(Input.GetTouch(0).position).x;
+                return true;
+            }
+
+            if (Input.GetMouseButton(0))
+            {
+                worldX = _camera.ScreenToWorldPoint(Input.mousePosition).x;
+                return true;
+            }
+
+            return false;
+        }
+
+        private void EnsureBottomLaneY()
+        {
+            if (_camera == null)
+            {
+                _camera = Camera.main;
+                if (_camera == null)
+                {
+                    return;
+                }
+            }
+
+            _targetY = -_camera.orthographicSize + _bottomPadding;
+            if (!_hasTargetY)
+            {
+                _hasTargetY = true;
+                transform.position = new Vector3(transform.position.x, _targetY, 0f);
+            }
         }
     }
 }

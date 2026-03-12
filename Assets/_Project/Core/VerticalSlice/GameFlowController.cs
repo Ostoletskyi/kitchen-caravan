@@ -26,19 +26,32 @@ namespace KitchenCaravan.VerticalSlice
 
         private void Awake()
         {
+            BalanceDebugSettings.EnsureDefaults();
             Time.timeScale = 1f;
             State = FlowState.Playing;
             DefeatedCount = 0;
+
+            if (_enemySpawner == null)
+            {
+                _enemySpawner = FindObjectOfType<EnemySpawner>();
+            }
 
             if (_enemySpawner != null)
             {
                 _enemySpawner.Configure(this);
             }
 
+            if (_hud == null)
+            {
+                _hud = FindObjectOfType<UIHudController>();
+            }
+
             if (_hud != null)
             {
                 _hud.Bind(this);
             }
+
+            EnsureDebugPanel();
         }
 
         public void RegisterEnemyDefeated()
@@ -91,6 +104,17 @@ namespace KitchenCaravan.VerticalSlice
         {
             _enemySpawner = spawner;
             _hud = hud;
+        }
+
+        private static void EnsureDebugPanel()
+        {
+            if (FindObjectOfType<BalanceDebugPanel>() != null)
+            {
+                return;
+            }
+
+            var go = new GameObject("BalanceDebugPanel");
+            go.AddComponent<BalanceDebugPanel>();
         }
     }
 }

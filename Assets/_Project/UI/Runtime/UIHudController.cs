@@ -53,7 +53,7 @@ namespace KitchenCaravan.VerticalSlice
         {
             if (_counterText != null)
             {
-                _counterText.text = $"Defeated: {current} / {target}";
+                _counterText.text = $"Caravans Destroyed: {current} / {target}";
             }
         }
 
@@ -81,8 +81,18 @@ namespace KitchenCaravan.VerticalSlice
             var scaler = canvasGO.GetComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = new Vector2(1920f, 1080f);
+            scaler.matchWidthOrHeight = 0.75f;
 
-            _counterText = CreateText(canvas.transform, "Counter", "Defeated: 0 / 0", new Vector2(170f, -40f), 42, TextAnchor.MiddleLeft);
+            _counterText = CreateText(
+                canvas.transform,
+                "Counter",
+                "Caravans: 0 / 0",
+                new Vector2(0f, -26f),
+                new Vector2(0.5f, 1f),
+                new Vector2(0.5f, 1f),
+                new Vector2(880f, 80f),
+                40,
+                TextAnchor.MiddleCenter);
 
             _winPanel = new GameObject("LevelCompletePanel", typeof(RectTransform), typeof(Image));
             _winPanel.transform.SetParent(canvas.transform, false);
@@ -94,28 +104,46 @@ namespace KitchenCaravan.VerticalSlice
             panelRT.anchoredPosition = Vector2.zero;
             _winPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.8f);
 
-            CreateText(_winPanel.transform, "CompleteLabel", "Level Complete", new Vector2(0f, 120f), 58, TextAnchor.MiddleCenter);
+            CreateText(
+                _winPanel.transform,
+                "CompleteLabel",
+                "Level Complete",
+                new Vector2(0f, 120f),
+                new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f),
+                new Vector2(620f, 110f),
+                58,
+                TextAnchor.MiddleCenter);
             CreateButton(_winPanel.transform, "RestartButton", "Restart", new Vector2(0f, 10f), flow.RestartLevel);
             CreateButton(_winPanel.transform, "MainMenuButton", "Main Menu", new Vector2(0f, -105f), flow.GoToMainMenu);
             _winPanel.SetActive(false);
         }
 
-        private static Text CreateText(Transform parent, string name, string text, Vector2 pos, int fontSize, TextAnchor anchor)
+        private static Text CreateText(
+            Transform parent,
+            string name,
+            string text,
+            Vector2 pos,
+            Vector2 anchor,
+            Vector2 pivot,
+            Vector2 size,
+            int fontSize,
+            TextAnchor textAnchor)
         {
             var go = new GameObject(name, typeof(RectTransform), typeof(Text));
             go.transform.SetParent(parent, false);
 
             var rt = go.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0.5f, 0.5f);
-            rt.anchorMax = new Vector2(0.5f, 0.5f);
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.sizeDelta = new Vector2(1000f, 120f);
+            rt.anchorMin = anchor;
+            rt.anchorMax = anchor;
+            rt.pivot = pivot;
+            rt.sizeDelta = size;
             rt.anchoredPosition = pos;
 
             var textComp = go.GetComponent<Text>();
             textComp.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             textComp.fontSize = fontSize;
-            textComp.alignment = anchor;
+            textComp.alignment = textAnchor;
             textComp.color = Color.white;
             textComp.text = text;
             return textComp;
@@ -140,7 +168,16 @@ namespace KitchenCaravan.VerticalSlice
             button.targetGraphic = image;
             button.onClick.AddListener(onClick);
 
-            var label = CreateText(go.transform, "Label", text, Vector2.zero, 34, TextAnchor.MiddleCenter);
+            var label = CreateText(
+                go.transform,
+                "Label",
+                text,
+                Vector2.zero,
+                new Vector2(0.5f, 0.5f),
+                new Vector2(0.5f, 0.5f),
+                new Vector2(320f, 70f),
+                34,
+                TextAnchor.MiddleCenter);
             label.rectTransform.anchorMin = Vector2.zero;
             label.rectTransform.anchorMax = Vector2.one;
             label.rectTransform.offsetMin = Vector2.zero;
