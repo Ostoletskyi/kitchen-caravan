@@ -2,6 +2,8 @@
 # Unity .gitignore
 # =========================
 
+_dev/tmp/
+
 # Unity generated
 [Ll]ibrary/
 [Tt]emp/
