@@ -77,8 +77,13 @@ if (Get-Command git -ErrorAction SilentlyContinue) { git --version }
 if (Get-Command dotnet -ErrorAction SilentlyContinue) { dotnet --version }
 
 Say "[INFO] Opening PowerShell window in project root..."
-$pwsh = (Get-Command pwsh.exe -ErrorAction SilentlyContinue).Source
-if (-not $pwsh) { $pwsh = (Get-Command powershell.exe -ErrorAction SilentlyContinue).Source }
+$pwshCmd = Get-Command pwsh.exe -ErrorAction SilentlyContinue
+$pwsh = $null
+if ($pwshCmd) { $pwsh = $pwshCmd.Source }
+if (-not $pwsh) {
+  $powershellCmd = Get-Command powershell.exe -ErrorAction SilentlyContinue
+  if ($powershellCmd) { $pwsh = $powershellCmd.Source }
+}
 if ($pwsh) {
   Start-Process -FilePath $pwsh -ArgumentList @("-NoExit","-Command","cd `"$ProjectRoot`"") -WorkingDirectory $ProjectRoot | Out-Null
 } else {

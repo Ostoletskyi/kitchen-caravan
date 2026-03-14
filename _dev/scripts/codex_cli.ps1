@@ -10,6 +10,30 @@ $ErrorActionPreference = "Continue"
 function Say([string]$m){ Write-Host $m }
 function Exists([string]$name){ return [bool](Get-Command $name -ErrorAction SilentlyContinue) }
 
+function Get-CommandPath {
+  param([string[]]$Names)
+
+  foreach ($name in $Names) {
+    $cmd = Get-Command $name -ErrorAction SilentlyContinue
+    if ($cmd) {
+      return $cmd.Source
+    }
+  }
+
+  return $null
+}
+
+function Read-MenuChoice {
+  param([string]$Prompt)
+
+  $raw = Read-Host $Prompt
+  if ($null -eq $raw) {
+    return ""
+  }
+
+  return $raw.Trim()
+}
+
 Say "============================"
 Say "Codex CLI Mode"
 Say "Project: $ProjectRoot"
@@ -42,11 +66,13 @@ Push-Location $ProjectRoot
 try {
   while ($true) {
     Menu
-    $choice = Read-Host "Select 1/2/3/4/0"
+    $choice = Read-MenuChoice "Select 1/2/3/4/0"
+    if (-not $choice) {
+      break
+    }
     switch ($choice) {
       "1" {
-        $pwsh = (Get-Command pwsh.exe -ErrorAction SilentlyContinue).Source
-        if (-not $pwsh) { $pwsh = (Get-Command powershell.exe -ErrorAction SilentlyContinue).Source }
+        $pwsh = Get-CommandPath @("pwsh.exe", "powershell.exe", "pwsh", "powershell")
         if (-not $pwsh) { Say "[ERROR] PowerShell not found."; continue }
 
         Say "[INFO] Opening shell..."
@@ -64,8 +90,8 @@ Write-Host '  (run your Codex CLI command here)'
       "2" { Say ">> $cmd --help"; & $cmd --help }
       "3" {
         if (Get-Command git -ErrorAction SilentlyContinue) {
-          Say ">> git status"; git status
-          Say ""; Say ">> git diff"; git diff
+          Say ">> git --no-pager status"; git --no-pager status
+          Say ""; Say ">> git --no-pager diff"; git --no-pager diff
         } else { Say "[WARN] git not found." }
       }
       "4" {
@@ -74,7 +100,7 @@ Write-Host '  (run your Codex CLI command here)'
         $branch = "codex/session-$stamp"
         Say ">> git checkout -b $branch"
         git checkout -b $branch
-        git status
+        git --no-pager status
       }
       "0" { break }
       default { Say "Unknown choice." }

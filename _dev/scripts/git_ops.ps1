@@ -27,6 +27,29 @@ function Fail([string]$Message, [int]$Code = 1) {
   exit $Code
 }
 
+function Get-ItemCount {
+  param([object]$Value)
+
+  # PowerShell can unwrap single-item collections into scalars, so normalize with @().
+  return @($Value).Count
+}
+
+function Get-FirstTextLine {
+  param([object]$Value)
+
+  foreach ($item in @($Value)) {
+    $text = ($item -as [string])
+    if ($null -ne $text) {
+      $trimmed = $text.Trim()
+      if ($trimmed.Length -gt 0) {
+        return $trimmed
+      }
+    }
+  }
+
+  return ""
+}
+
 function Ensure-ProjectRoot {
   param([string]$Root)
 
@@ -76,6 +99,8 @@ function Invoke-Git {
   $psi.RedirectStandardOutput = $true
   $psi.RedirectStandardError = $true
   $psi.CreateNoWindow = $true
+  $psi.EnvironmentVariables["GIT_PAGER"] = "cat"
+  $psi.EnvironmentVariables["PAGER"] = "cat"
   $psi.Arguments = (($Arguments | ForEach-Object { Format-ProcessArgument $_ }) -join " ")
 
   $process = New-Object System.Diagnostics.Process
@@ -126,6 +151,22 @@ function Ensure-GitRepository {
   }
 }
 
+function Get-GitViewArguments {
+  param([string[]]$Arguments)
+
+  $array = @($Arguments)
+  if ($array.Count -eq 0) {
+    return @()
+  }
+
+  $pagerSafeCommands = @("status", "log", "diff")
+  if ($pagerSafeCommands -contains $array[0]) {
+    return @("--no-pager") + $array
+  }
+
+  return $array
+}
+
 function Get-LatestLauncherLog {
   param([string]$Root)
 
@@ -145,7 +186,7 @@ function Get-CurrentBranch {
     return ""
   }
 
-  return (($result.Output | Select-Object -First 1) -as [string]).Trim()
+  return (Get-FirstTextLine $result.Output)
 }
 
 function Get-UpstreamBranch {
@@ -154,7 +195,12 @@ function Get-UpstreamBranch {
     return $null
   }
 
-  return (($result.Output | Select-Object -First 1) -as [string]).Trim()
+  $line = Get-FirstTextLine $result.Output
+  if (-not $line) {
+    return $null
+  }
+
+  return $line
 }
 
 function Get-DefaultRemote {
@@ -217,7 +263,7 @@ function Get-ConflictState {
   return [pscustomobject]@{
     InRebase      = $inRebase
     InMerge       = $inMerge
-    HasUnmerged   = $unmergedFiles.Count -gt 0
+    HasUnmerged   = (Get-ItemCount $unmergedFiles) -gt 0
     UnmergedFiles = $unmergedFiles
   }
 }
@@ -234,7 +280,7 @@ function Build-AutoCommitMessage {
   }
 
   $tail = @(Get-Content -LiteralPath $logFile.FullName -ErrorAction SilentlyContinue | Select-Object -Last 200)
-  if ($tail.Count -eq 0) {
+  if ((Get-ItemCount $tail) -eq 0) {
     return $fallback
   }
 
@@ -253,9 +299,9 @@ function Build-AutoCommitMessage {
 
   if (-not $marker) {
     $staged = Get-StagedChanges
-    if ($staged.Count -gt 0) {
+    if ((Get-ItemCount $staged) -gt 0) {
       $preview = ($staged | Select-Object -First 3) -join ", "
-      if ($staged.Count -gt 3) {
+      if ((Get-ItemCount $staged) -gt 3) {
         $preview += ", ..."
       }
       $marker = "update $preview"
@@ -282,10 +328,13 @@ function Show-RepositorySummary {
   if ($upstream) {
     Say "[INFO] Upstream: $upstream"
     $aheadBehind = Invoke-Git -Arguments @("rev-list", "--left-right", "--count", "HEAD...@{u}") -AllowFailure -Silent
-    if ($aheadBehind.ExitCode -eq 0 -and $aheadBehind.Output.Count -gt 0) {
-      $counts = (($aheadBehind.Output | Select-Object -First 1) -as [string]).Trim() -split '\s+'
-      if ($counts.Length -ge 2) {
-        Say "[INFO] Ahead/Behind: $($counts[0])/$($counts[1])"
+    if ($aheadBehind.ExitCode -eq 0) {
+      $aheadBehindLine = Get-FirstTextLine $aheadBehind.Output
+      if ($aheadBehindLine) {
+        $counts = $aheadBehindLine -split '\s+'
+        if ($counts.Length -ge 2) {
+          Say "[INFO] Ahead/Behind: $($counts[0])/$($counts[1])"
+        }
       }
     }
   } else {
@@ -311,15 +360,19 @@ function Invoke-Push {
     Say "[INFO] AUTO PUSH: stage -> commit if needed -> push"
     Show-RepositorySummary
 
+    $changesBeforeAdd = Get-WorkingTreeChanges
     Invoke-Git -Arguments @("add", "-A") | Out-Null
 
-    $changes = Get-WorkingTreeChanges
     $staged = Get-StagedChanges
+    $changesAfterAdd = Get-WorkingTreeChanges
 
-    if ($changes.Count -eq 0) {
+    if ((Get-ItemCount $changesBeforeAdd) -eq 0 -and (Get-ItemCount $staged) -eq 0) {
       Say "[OK] Working tree clean. Nothing to commit."
-    } elseif ($staged.Count -eq 0) {
+    } elseif ((Get-ItemCount $staged) -eq 0) {
       Warn "Changes were detected, but nothing is staged after 'git add -A'. Check .gitignore or file permissions."
+      if ((Get-ItemCount $changesAfterAdd) -gt 0) {
+        Warn "Unstaged changes remain after staging."
+      }
     } else {
       $message = Build-AutoCommitMessage $Root
       Say "[INFO] Commit message: $message"
@@ -357,10 +410,10 @@ function Invoke-PullRebase {
     Ensure-SafeForSync $Root
     Say "[INFO] FETCH + PULL --REBASE --AUTOSTASH"
     Show-RepositorySummary
-    Invoke-Git -Arguments @("status", "--short", "--branch") | Out-Null
+    Invoke-Git -Arguments (Get-GitViewArguments @("status", "--short", "--branch")) | Out-Null
     Invoke-Git -Arguments @("fetch", "--prune", "--tags", "--all") | Out-Null
     Invoke-Git -Arguments @("pull", "--rebase", "--autostash") | Out-Null
-    Invoke-Git -Arguments @("status", "--short", "--branch") | Out-Null
+    Invoke-Git -Arguments (Get-GitViewArguments @("status", "--short", "--branch")) | Out-Null
   } finally {
     Pop-Location
   }
@@ -387,7 +440,7 @@ function Invoke-ConflictHelper {
   Push-Location $Root
   try {
     Say "[INFO] CONFLICT HELPER"
-    Invoke-Git -Arguments @("status", "--short", "--branch") | Out-Null
+    Invoke-Git -Arguments (Get-GitViewArguments @("status", "--short", "--branch")) | Out-Null
 
     $state = Get-ConflictState $Root
     if (-not $state.InRebase -and -not $state.InMerge -and -not $state.HasUnmerged) {
@@ -395,7 +448,7 @@ function Invoke-ConflictHelper {
       return
     }
 
-    if ($state.UnmergedFiles.Count -gt 0) {
+    if ((Get-ItemCount $state.UnmergedFiles) -gt 0) {
       Say "[INFO] Unmerged files:"
       foreach ($file in $state.UnmergedFiles) {
         Say "  $file"
@@ -452,7 +505,7 @@ function Invoke-ConflictHelper {
           Warn "Could not open Explorer: $($_.Exception.Message)"
         }
       }
-      "S" { Invoke-Git -Arguments @("status", "--short", "--branch") | Out-Null }
+      "S" { Invoke-Git -Arguments (Get-GitViewArguments @("status", "--short", "--branch")) | Out-Null }
       default { }
     }
   } finally {
@@ -466,12 +519,12 @@ function Invoke-Status {
   Push-Location $Root
   try {
     Show-RepositorySummary
-    Invoke-Git -Arguments @("status", "--short", "--branch") | Out-Null
-    Invoke-Git -Arguments @("log", "--oneline", "--decorate", "-n", "10") | Out-Null
+    Invoke-Git -Arguments (Get-GitViewArguments @("status", "--short", "--branch")) | Out-Null
+    Invoke-Git -Arguments (Get-GitViewArguments @("log", "--oneline", "--decorate", "-n", "10")) | Out-Null
     Invoke-Git -Arguments @("remote", "-v") | Out-Null
     $stash = Invoke-Git -Arguments @("stash", "list") -AllowFailure -Silent
     if ($stash.ExitCode -eq 0) {
-      $count = @($stash.Output | Where-Object { $_ }).Count
+      $count = Get-ItemCount @($stash.Output | Where-Object { $_ })
       Say "[INFO] Stash entries: $count"
     }
   } finally {

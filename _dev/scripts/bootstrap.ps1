@@ -81,9 +81,16 @@ function Start-WindowsTerminalTabs($root, $tabs) {
   if ($wt) {
     Log "Opening Windows Terminal tabs..."
 
-    $pwshPath = (Get-Command pwsh.exe -ErrorAction SilentlyContinue).Source
+    $pwshCmd = Get-Command pwsh.exe -ErrorAction SilentlyContinue
+    $pwshPath = $null
+    if ($pwshCmd) {
+      $pwshPath = $pwshCmd.Source
+    }
     if (-not $pwshPath) {
-      $pwshPath = (Get-Command powershell.exe -ErrorAction SilentlyContinue).Source
+      $powershellCmd = Get-Command powershell.exe -ErrorAction SilentlyContinue
+      if ($powershellCmd) {
+        $pwshPath = $powershellCmd.Source
+      }
     }
     if (-not $pwshPath) {
       Log "WARN: No PowerShell executable found. Skipping terminal launch."

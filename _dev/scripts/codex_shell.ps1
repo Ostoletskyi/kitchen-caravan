@@ -11,6 +11,30 @@ function Run([string]$cmd){
   try { Invoke-Expression $cmd } catch { Say ("[WARN] Command failed: " + $_.Exception.Message) }
 }
 
+function Get-CommandPath {
+  param([string[]]$Names)
+
+  foreach ($name in $Names) {
+    $cmd = Get-Command $name -ErrorAction SilentlyContinue
+    if ($cmd) {
+      return $cmd.Source
+    }
+  }
+
+  return $null
+}
+
+function Read-MenuChoice {
+  param([string]$Prompt)
+
+  $raw = Read-Host $Prompt
+  if ($null -eq $raw) {
+    return ""
+  }
+
+  return $raw.Trim()
+}
+
 function Get-Git { return (Get-Command git -ErrorAction SilentlyContinue) }
 function Get-Codex { return (Get-Command codex -ErrorAction SilentlyContinue) }
 
@@ -124,7 +148,10 @@ function Smart-Conflict-Resolver {
   Say "  4) Abort merge (git merge --abort)"
   Say "  5) Open repo folder (Explorer)"
   Say "  X) Back"
-  $c = (Read-Host "Select 1/2/3/4/5/X").Trim().ToUpperInvariant()
+  $c = (Read-MenuChoice "Select 1/2/3/4/5/X").ToUpperInvariant()
+  if (-not $c) {
+    return
+  }
   switch ($c) {
     "1" { Run "git mergetool" }
     "2" { Run "git rebase --continue" }
@@ -165,11 +192,13 @@ try {
     Say "  7) Smart conflict resolver (local mergetool OR open GitHub PR page)"
     Say "  0) Back"
 
-    $sel = (Read-Host "Select 1/2/3/4/5/6/7/0").Trim()
+    $sel = Read-MenuChoice "Select 1/2/3/4/5/6/7/0"
+    if (-not $sel) {
+      break
+    }
     switch ($sel) {
       "1" {
-        $pwsh = (Get-Command pwsh -ErrorAction SilentlyContinue).Source
-        if (-not $pwsh) { $pwsh = (Get-Command powershell -ErrorAction SilentlyContinue).Source }
+        $pwsh = Get-CommandPath @("pwsh.exe", "powershell.exe", "pwsh", "powershell")
         if (-not $pwsh) { Say "[ERROR] No PowerShell found."; continue }
         Start-Process -FilePath $pwsh -ArgumentList @("-NoExit","-Command","Set-Location -LiteralPath `"$ProjectRoot`"") -WorkingDirectory $ProjectRoot | Out-Null
       }

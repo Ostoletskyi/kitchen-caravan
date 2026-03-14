@@ -81,9 +81,17 @@ function Find-Solution([string]$root){
 }
 
 function Get-PwshPath {
-  $p = (Get-Command pwsh.exe -ErrorAction SilentlyContinue).Source
-  if (-not $p) { $p = (Get-Command powershell.exe -ErrorAction SilentlyContinue).Source }
-  return $p
+  $pwsh = Get-Command pwsh.exe -ErrorAction SilentlyContinue
+  if ($pwsh) {
+    return $pwsh.Source
+  }
+
+  $powershell = Get-Command powershell.exe -ErrorAction SilentlyContinue
+  if ($powershell) {
+    return $powershell.Source
+  }
+
+  return $null
 }
 
 function Open-PwshWindow([string]$root){
