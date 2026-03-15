@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using KitchenCaravan.Data;
 using KitchenCaravan.Save;
@@ -11,6 +12,8 @@ namespace KitchenCaravan.Meta
         private readonly MetaProgressionConfigSO _progressionConfig;
         private readonly RewardTableSO _rewardTable;
         private readonly DroneUpgradeConfigSO _droneUpgradeConfig;
+        private readonly AbilityCardRewardService _abilityCardRewardService;
+        private readonly DroneSkinDefinitionSO[] _skinDefinitions;
         private readonly TimerSystem _timerSystem;
 
         public MetaProgressionService(
@@ -18,6 +21,9 @@ namespace KitchenCaravan.Meta
             MetaProgressionConfigSO progressionConfig,
             RewardTableSO rewardTable,
             DroneUpgradeConfigSO droneUpgradeConfig,
+            AbilityCardDefinitionSO[] abilityCards = null,
+            AbilityCardDropTableSO abilityCardDropTable = null,
+            DroneSkinDefinitionSO[] skinDefinitions = null,
             TimerSystem timerSystem = null)
         {
             _saveModel = saveModel ?? SaveModel.CreateNew();
@@ -25,7 +31,10 @@ namespace KitchenCaravan.Meta
             _progressionConfig = progressionConfig;
             _rewardTable = rewardTable;
             _droneUpgradeConfig = droneUpgradeConfig;
+            _abilityCardRewardService = new AbilityCardRewardService(abilityCards, abilityCardDropTable);
+            _skinDefinitions = skinDefinitions ?? Array.Empty<DroneSkinDefinitionSO>();
             _timerSystem = timerSystem ?? new TimerSystem();
+            EnsureOwnedDefaultSkins();
             SyncEnergy();
         }
 
@@ -84,12 +93,59 @@ namespace KitchenCaravan.Meta
             return IsDifficultyGloballyUnlocked(tier);
         }
 
+        public bool HasCompletedMap(MapConfigSO mapConfig, DifficultyTier tier)
+        {
+            if (mapConfig == null || string.IsNullOrWhiteSpace(mapConfig.mapId))
+            {
+                return false;
+            }
+
+            var completions = _saveModel.progression.mapCompletions;
+            for (int i = 0; i < completions.Count; i++)
+            {
+                if (completions[i] == null || completions[i].mapId != mapConfig.mapId)
+                {
+                    continue;
+                }
+
+                switch (tier)
+                {
+                    case DifficultyTier.Hard:
+                        return completions[i].hardCompleted;
+                    case DifficultyTier.Insane:
+                        return completions[i].insaneCompleted;
+                    default:
+                        return completions[i].normalCompleted;
+                }
+            }
+
+            return false;
+        }
+
         public bool CanStartRun(out int currentEnergy, out int requiredEnergy)
         {
             SyncEnergy();
             requiredEnergy = GetEnergyCostPerRun();
             currentEnergy = _saveModel.energy.currentEnergy;
             return currentEnergy >= requiredEnergy;
+        }
+
+        public int GetAvailableRunCountEstimate(bool assumeVictory)
+        {
+            SyncEnergy();
+            int netCost = Mathf.Max(1, GetEnergyCostPerRun() - (assumeVictory ? GetVictoryEnergyRefund() : GetDefeatEnergyRefund()));
+            return _saveModel.energy.currentEnergy / netCost;
+        }
+
+        public long GetNextEnergyRestoreUnix()
+        {
+            SyncEnergy();
+            if (_saveModel.energy.currentEnergy >= GetMaximumEnergy())
+            {
+                return 0;
+            }
+
+            return _saveModel.energy.lastEnergyTickUnix + GetEnergyRegenSeconds();
         }
 
         public bool TryBeginRun()
@@ -111,10 +167,14 @@ namespace KitchenCaravan.Meta
             SyncEnergy();
 
             RunRewardResult reward = RewardCalculator.Evaluate(mapConfig, tier, victory, _rewardTable, _progressionConfig);
+            reward.grantedCards = _abilityCardRewardService.Roll(reward.chestReward);
+
             _saveModel.economy.coins += reward.coins;
             _saveModel.economy.mana += reward.mana;
             _saveModel.energy.currentEnergy = Mathf.Clamp(_saveModel.energy.currentEnergy + reward.energyRefund + reward.bonusEnergy, 0, GetMaximumEnergy());
             _saveModel.energy.lastEnergyTickUnix = _timerSystem.GetUnixTimeNow();
+
+            GrantCards(reward.grantedCards);
 
             if (victory)
             {
@@ -172,6 +232,73 @@ namespace KitchenCaravan.Meta
             _saveModel.economy.coins -= totalCost;
             _saveModel.economy.upgradeChips += chipCount;
             return true;
+        }
+
+        public bool TryUpgradeAbilityCard(AbilityCardDefinitionSO definition)
+        {
+            if (definition == null || string.IsNullOrWhiteSpace(definition.cardId))
+            {
+                return false;
+            }
+
+            OwnedAbilityCardData card = GetOrCreateOwnedCard(definition.cardId);
+            int currentLevel = Mathf.Max(1, card.level);
+            if (currentLevel >= Mathf.Max(1, definition.maxLevel))
+            {
+                return false;
+            }
+
+            int levelIndex = currentLevel - 1;
+            int requiredCopies = GetArrayValue(definition.copiesRequiredPerLevel, levelIndex, 1);
+            int requiredChips = GetArrayValue(definition.chipCostPerLevel, levelIndex, 1);
+            if (card.copies < requiredCopies || _saveModel.economy.upgradeChips < requiredChips)
+            {
+                return false;
+            }
+
+            card.copies -= requiredCopies;
+            _saveModel.economy.upgradeChips -= requiredChips;
+            card.level++;
+            return true;
+        }
+
+        public bool TryEquipSkin(DroneSkinDefinitionSO definition)
+        {
+            if (definition == null || string.IsNullOrWhiteSpace(definition.skinId))
+            {
+                return false;
+            }
+
+            OwnedSkinData ownedSkin = GetOwnedSkin(definition.skinId);
+            if (ownedSkin == null || !ownedSkin.unlocked)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < _saveModel.ownedSkins.Count; i++)
+            {
+                if (_saveModel.ownedSkins[i] != null)
+                {
+                    _saveModel.ownedSkins[i].equipped = _saveModel.ownedSkins[i].skinId == definition.skinId;
+                }
+            }
+
+            _saveModel.equippedSkinId = definition.skinId;
+            return true;
+        }
+
+        public SkinGameplayBonus[] GetEquippedSkinBonuses()
+        {
+            string equippedSkinId = _saveModel.equippedSkinId;
+            for (int i = 0; i < _skinDefinitions.Length; i++)
+            {
+                if (_skinDefinitions[i] != null && _skinDefinitions[i].skinId == equippedSkinId)
+                {
+                    return _skinDefinitions[i].gameplayBonuses ?? Array.Empty<SkinGameplayBonus>();
+                }
+            }
+
+            return Array.Empty<SkinGameplayBonus>();
         }
 
         public void SyncEnergy()
@@ -244,6 +371,16 @@ namespace KitchenCaravan.Meta
             return _progressionConfig != null ? Mathf.Max(1, _progressionConfig.maximumEnergy) : 35;
         }
 
+        private int GetVictoryEnergyRefund()
+        {
+            return _progressionConfig != null ? Mathf.Max(0, _progressionConfig.victoryEnergyRefund) : 3;
+        }
+
+        private int GetDefeatEnergyRefund()
+        {
+            return _progressionConfig != null ? Mathf.Max(0, _progressionConfig.defeatEnergyRefund) : 1;
+        }
+
         private int GetEnergyCostPerRun()
         {
             return _progressionConfig != null ? Mathf.Max(1, _progressionConfig.energyCostPerRun) : 5;
@@ -262,6 +399,117 @@ namespace KitchenCaravan.Meta
         private int GetInsaneUnlockMapIndex()
         {
             return _progressionConfig != null ? Mathf.Max(1, _progressionConfig.insaneGlobalUnlockAtNormalMap) : 20;
+        }
+
+        private void GrantCards(CardRewardData[] rewards)
+        {
+            if (rewards == null)
+            {
+                return;
+            }
+
+            for (int i = 0; i < rewards.Length; i++)
+            {
+                if (string.IsNullOrWhiteSpace(rewards[i].cardId) || rewards[i].copies <= 0)
+                {
+                    continue;
+                }
+
+                OwnedAbilityCardData card = GetOrCreateOwnedCard(rewards[i].cardId);
+                card.copies += rewards[i].copies;
+            }
+        }
+
+        private OwnedAbilityCardData GetOrCreateOwnedCard(string cardId)
+        {
+            for (int i = 0; i < _saveModel.abilityCards.Count; i++)
+            {
+                if (_saveModel.abilityCards[i] != null && _saveModel.abilityCards[i].cardId == cardId)
+                {
+                    return _saveModel.abilityCards[i];
+                }
+            }
+
+            var card = new OwnedAbilityCardData
+            {
+                cardId = cardId,
+                level = 1,
+                copies = 0
+            };
+            _saveModel.abilityCards.Add(card);
+            return card;
+        }
+
+        private OwnedSkinData GetOwnedSkin(string skinId)
+        {
+            for (int i = 0; i < _saveModel.ownedSkins.Count; i++)
+            {
+                if (_saveModel.ownedSkins[i] != null && _saveModel.ownedSkins[i].skinId == skinId)
+                {
+                    return _saveModel.ownedSkins[i];
+                }
+            }
+
+            return null;
+        }
+
+        private void EnsureOwnedDefaultSkins()
+        {
+            bool equippedFound = false;
+            for (int i = 0; i < _skinDefinitions.Length; i++)
+            {
+                var definition = _skinDefinitions[i];
+                if (definition == null || string.IsNullOrWhiteSpace(definition.skinId))
+                {
+                    continue;
+                }
+
+                OwnedSkinData owned = GetOwnedSkin(definition.skinId);
+                if (owned == null)
+                {
+                    owned = new OwnedSkinData
+                    {
+                        skinId = definition.skinId,
+                        unlocked = definition.unlockedByDefault,
+                        equipped = false
+                    };
+                    _saveModel.ownedSkins.Add(owned);
+                }
+                else if (definition.unlockedByDefault)
+                {
+                    owned.unlocked = true;
+                }
+
+                if (owned.equipped || _saveModel.equippedSkinId == definition.skinId)
+                {
+                    equippedFound = true;
+                    _saveModel.equippedSkinId = definition.skinId;
+                    owned.equipped = true;
+                }
+            }
+
+            if (!equippedFound)
+            {
+                for (int i = 0; i < _saveModel.ownedSkins.Count; i++)
+                {
+                    if (_saveModel.ownedSkins[i] != null && _saveModel.ownedSkins[i].unlocked)
+                    {
+                        _saveModel.ownedSkins[i].equipped = true;
+                        _saveModel.equippedSkinId = _saveModel.ownedSkins[i].skinId;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private static int GetArrayValue(int[] values, int index, int fallback)
+        {
+            if (values == null || values.Length == 0)
+            {
+                return fallback;
+            }
+
+            return values[Mathf.Clamp(index, 0, values.Length - 1)];
         }
     }
 }

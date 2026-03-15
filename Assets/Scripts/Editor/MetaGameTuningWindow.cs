@@ -44,9 +44,11 @@ namespace KitchenCaravan.EditorTools
             EditorGUILayout.LabelField("Chest Count", reward.chestReward.chestCount.ToString());
             EditorGUILayout.LabelField("Chest Contents Multiplier", reward.chestReward.contentsMultiplier.ToString("0.00"));
             EditorGUILayout.LabelField("Card Drop Chance", reward.chestReward.cardDropChance.ToString("P1"));
+            EditorGUILayout.LabelField("Chest Reduced On Defeat", reward.chestReward.reducedForDefeat ? "Yes" : "No");
             EditorGUILayout.LabelField("Energy Cost", reward.energyCost.ToString());
             EditorGUILayout.LabelField("Energy Refund", reward.energyRefund.ToString());
             EditorGUILayout.LabelField("Bonus Energy", reward.bonusEnergy.ToString());
+            EditorGUILayout.LabelField("Net Energy Cost", Mathf.Max(0, reward.energyCost - reward.energyRefund - reward.bonusEnergy).ToString());
         }
     }
 }

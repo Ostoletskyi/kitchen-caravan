@@ -7,7 +7,7 @@ namespace KitchenCaravan.Save
     [Serializable]
     public class SaveModel
     {
-        public const int Version = 2;
+        public const int Version = 3;
 
         public int version = Version;
         public string playerId;
@@ -19,6 +19,7 @@ namespace KitchenCaravan.Save
         public DroneUpgradeProgressData droneUpgrades = DroneUpgradeProgressData.CreateDefault();
         public List<OwnedAbilityCardData> abilityCards = new List<OwnedAbilityCardData>();
         public List<OwnedSkinData> ownedSkins = new List<OwnedSkinData>();
+        public string equippedSkinId = "skin_default";
 
         public static SaveModel CreateNew()
         {
@@ -52,6 +53,28 @@ namespace KitchenCaravan.Save
 
             abilityCards ??= new List<OwnedAbilityCardData>();
             ownedSkins ??= new List<OwnedSkinData>();
+
+            for (int i = 0; i < abilityCards.Count; i++)
+            {
+                abilityCards[i] ??= new OwnedAbilityCardData();
+                abilityCards[i].EnsureDefaults();
+            }
+
+            for (int i = ownedSkins.Count - 1; i >= 0; i--)
+            {
+                if (ownedSkins[i] == null)
+                {
+                    ownedSkins.RemoveAt(i);
+                    continue;
+                }
+
+                ownedSkins[i].EnsureDefaults();
+            }
+
+            if (string.IsNullOrWhiteSpace(equippedSkinId))
+            {
+                equippedSkinId = "skin_default";
+            }
         }
     }
 }

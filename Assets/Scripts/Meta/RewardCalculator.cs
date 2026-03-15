@@ -22,7 +22,7 @@ namespace KitchenCaravan.Meta
             int coins = Mathf.Max(0, Mathf.RoundToInt(baseCoins * modifier.coinMultiplier * tierSettings.rewardMultiplier * outcomeMultiplier));
             int mana = Mathf.Max(0, Mathf.RoundToInt(baseMana * modifier.manaMultiplier * tierSettings.rewardMultiplier * outcomeMultiplier));
 
-            float chestContentsMultiplier = victory || progressionConfig == null ? 1f : progressionConfig.defeatChestContentsMultiplier;
+            float chestContentsMultiplier = victory ? 1f : progressionConfig != null ? progressionConfig.defeatChestContentsMultiplier : 0.5f;
             float baseCardChance = tierSettings.baseCardDropChance * modifier.cardChanceMultiplier;
             int bonusEnergy = 0;
             if (victory && Random.value <= tierSettings.bonusEnergyChance)
@@ -41,8 +41,10 @@ namespace KitchenCaravan.Meta
                     tier = tierSettings.guaranteedChestTier,
                     chestCount = 1,
                     contentsMultiplier = chestContentsMultiplier,
-                    cardDropChance = Mathf.Clamp01(baseCardChance * chestContentsMultiplier)
+                    cardDropChance = Mathf.Clamp01(baseCardChance * chestContentsMultiplier),
+                    reducedForDefeat = !victory
                 },
+                grantedCards = System.Array.Empty<CardRewardData>(),
                 energyCost = progressionConfig != null ? progressionConfig.energyCostPerRun : 5,
                 energyRefund = progressionConfig != null ? (victory ? progressionConfig.victoryEnergyRefund : progressionConfig.defeatEnergyRefund) : (victory ? 3 : 1),
                 bonusEnergy = bonusEnergy

@@ -12,6 +12,7 @@ namespace KitchenCaravan.Data
         public MetaProgressionConfigSO metaProgressionConfig;
         public RewardTableSO rewardTable;
         public DroneUpgradeConfigSO droneUpgradeConfig;
+        public AbilityCardDropTableSO abilityCardDropTable;
         public UIScreenFlowConfigSO uiScreenFlow;
         public MapConfigSO[] maps;
         public AbilityCardDefinitionSO[] abilityCards;

@@ -15,5 +15,6 @@ namespace KitchenCaravan.Meta
         public EconomyStateData Economy => SaveModel.economy;
         public EnergyStateData Energy => SaveModel.energy;
         public DroneUpgradeProgressData DroneUpgrades => SaveModel.droneUpgrades;
+        public string EquippedSkinId => SaveModel.equippedSkinId;
     }
 }

@@ -170,6 +170,12 @@ namespace KitchenCaravan.Meta
         public string cardId;
         public int copies;
         public int level;
+
+        public void EnsureDefaults()
+        {
+            copies = Mathf.Max(0, copies);
+            level = Mathf.Max(1, level);
+        }
     }
 
     [Serializable]
@@ -178,6 +184,14 @@ namespace KitchenCaravan.Meta
         public string skinId;
         public bool unlocked;
         public bool equipped;
+
+        public void EnsureDefaults()
+        {
+            if (string.IsNullOrWhiteSpace(skinId))
+            {
+                skinId = "skin_default";
+            }
+        }
     }
 
     [Serializable]
@@ -194,6 +208,7 @@ namespace KitchenCaravan.Meta
         public int chestCount;
         public float contentsMultiplier;
         public float cardDropChance;
+        public bool reducedForDefeat;
     }
 
     [Serializable]
@@ -213,9 +228,19 @@ namespace KitchenCaravan.Meta
         public int coins;
         public int mana;
         public ChestRewardData chestReward;
+        public CardRewardData[] grantedCards;
         public int energyCost;
         public int energyRefund;
         public int bonusEnergy;
+    }
+
+    [Serializable]
+    public struct CardRewardData
+    {
+        public string cardId;
+        public AbilityCardRarity rarity;
+        public int copies;
+        public ChestTier chestTier;
     }
 
     [Serializable]
