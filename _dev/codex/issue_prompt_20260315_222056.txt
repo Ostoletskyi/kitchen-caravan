@@ -1,0 +1,166 @@
+You are Codex 5.3 acting as a senior Unity engineer. Fix these Unity compile errors in the current repo.
+Provide a unified diff patch (git apply compatible). Keep changes minimal.
+
+ERRORS:
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(218,105): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(25,28): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(218,107): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(25,30): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(218,107): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(25,30): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(218,137): error CS1003: Syntax error, ',' expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(25,64): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(218,138): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(25,66): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(25,66): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,39): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,39): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,39): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(31,28): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,41): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(31,30): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(31,30): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,41): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,51): error CS1519: Invalid token '{' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(31,64): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(31,66): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(31,66): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,52): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,54): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,54): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(36,28): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,68): error CS1519: Invalid token 'float' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(36,30): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,146): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(36,30): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,146): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,148): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,148): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(36,64): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(36,66): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,183): error CS1003: Syntax error, '(' expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(36,66): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,183): error CS1001: Identifier expected
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,203): error CS1026: ) expected
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,204): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,204): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(42,28): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,206): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(42,30): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,206): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(42,30): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,216): error CS1519: Invalid token '}' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,217): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(42,64): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,218): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,219): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(42,66): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,220): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(42,66): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,221): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,222): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,223): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(60,54): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(60,56): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(249,233): error CS1585: Member modifier 'private' must precede the member type and name
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(60,56): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,41): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,41): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,41): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,43): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(290,1): error CS1022: Type or namespace definition, or end-of-file expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,43): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,53): error CS1519: Invalid token '{' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,54): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,56): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,56): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,70): error CS1519: Invalid token 'if' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,87): error CS8124: Tuple must contain at least two elements.
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,87): error CS1026: ) expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,87): error CS1519: Invalid token '==' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,95): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,97): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,97): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,111): error CS1519: Invalid token '{' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,112): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,114): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,114): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,182): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,182): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,184): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,184): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,202): error CS1519: Invalid token 'if' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,219): error CS8124: Tuple must contain at least two elements.
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,219): error CS1026: ) expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,219): error CS1519: Invalid token '==' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,227): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,229): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,229): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,247): error CS1519: Invalid token '{' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,248): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,250): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,250): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,333): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,333): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,335): error CS1519: Invalid token '`' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,335): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,353): error CS1519: Invalid token '}' in class, record, struct, or interface member declaration
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,354): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,355): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,356): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,357): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,371): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,372): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,373): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,374): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,383): error CS1022: Type or namespace definition, or end-of-file expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,384): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,385): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,386): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,387): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,388): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,389): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,390): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,400): error CS1585: Member modifier 'private' must precede the member type and name
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,400): error CS8803: Top-level statements must precede namespace and type declarations.
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,400): error CS0106: The modifier 'private' is not valid for this item
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,433): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,433): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,434): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,435): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,436): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,446): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,448): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,448): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,462): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,487): error CS1525: Invalid expression term ''
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,487): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,487): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,489): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,489): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,503): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,504): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,506): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,506): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,536): error CS1003: Syntax error, ',' expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,537): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,551): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,553): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,553): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,567): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,568): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,570): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,570): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,580): error CS1002: ; expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,581): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,582): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,583): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,584): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,585): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,586): error CS0116: A namespace cannot directly contain members such as fields, methods or statements
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,587): error CS1056: Unexpected character '`'
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,597): error CS1585: Member modifier 'private' must precede the member type and name
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(85,597): error CS0106: The modifier 'private' is not valid for this item
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(98,9): error CS0106: The modifier 'private' is not valid for this item
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(104,5): error CS1022: Type or namespace definition, or end-of-file expected
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(105,1): error CS1022: Type or namespace definition, or end-of-file expected

@@ -9,10 +9,11 @@ namespace KitchenCaravan.VerticalSlice
         public enum FlowState
         {
             Playing,
-            Win
+            Win,
+            Lose
         }
 
-        [SerializeField] private int _targetDefeats = 20;
+        [SerializeField] private int _targetDefeats = 1;
         [SerializeField] private LevelConfig _levelConfig;
         [SerializeField] private EnemySpawner _enemySpawner;
         [SerializeField] private UIHudController _hud;
@@ -24,6 +25,8 @@ namespace KitchenCaravan.VerticalSlice
 
         public event Action<int, int> DefeatedChanged;
         public event Action WinTriggered;
+        public event Action LoseTriggered;
+        public event Action<FlowState> StateChanged;
 
         private void Awake()
         {
@@ -77,14 +80,32 @@ namespace KitchenCaravan.VerticalSlice
             }
 
             State = FlowState.Win;
-            Time.timeScale = 0.2f;
-
+            Time.timeScale = 0f;
             if (_enemySpawner != null)
             {
                 _enemySpawner.enabled = false;
             }
 
+            StateChanged?.Invoke(State);
             WinTriggered?.Invoke();
+        }
+
+        public void TriggerLose()
+        {
+            if (State != FlowState.Playing)
+            {
+                return;
+            }
+
+            State = FlowState.Lose;
+            Time.timeScale = 0f;
+            if (_enemySpawner != null)
+            {
+                _enemySpawner.enabled = false;
+            }
+
+            StateChanged?.Invoke(State);
+            LoseTriggered?.Invoke();
         }
 
         public void RestartLevel()
@@ -104,6 +125,5 @@ namespace KitchenCaravan.VerticalSlice
             _enemySpawner = spawner;
             _hud = hud;
         }
-
     }
 }

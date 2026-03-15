@@ -1,19 +1,22 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 namespace KitchenCaravan.VerticalSlice
 {
     public class EnemySpawner : MonoBehaviour
     {
-        [SerializeField] private float _spawnInterval = 3f;
-
-        private float _nextSpawn;
         private GameFlowController _flow;
-        private readonly List<CaravanController> _activeCaravans = new List<CaravanController>();
+        private CaravanController _activeCaravan;
+        private bool _spawned;
 
         public void Configure(GameFlowController flow)
         {
             _flow = flow;
+            SpawnIfNeeded();
+        }
+
+        private void Start()
+        {
+            SpawnIfNeeded();
         }
 
         private void Update()
@@ -23,21 +26,24 @@ namespace KitchenCaravan.VerticalSlice
                 return;
             }
 
-            if (Time.time < _nextSpawn)
+            SpawnIfNeeded();
+        }
+
+        private void SpawnIfNeeded()
+        {
+            if (_spawned)
             {
                 return;
             }
 
-            float delay = LevelRuntimeSettings.SpawnDelay > 0f ? LevelRuntimeSettings.SpawnDelay : _spawnInterval;
-            _nextSpawn = Time.time + Mathf.Max(0.1f, delay);
+            _spawned = true;
             SpawnOne();
         }
 
         private void SpawnOne()
         {
             Vector3 pos = GetSpawnPosition();
-
-            var caravanObject = new GameObject($"Caravan_{Time.frameCount}");
+            var caravanObject = new GameObject("KitchenCaravan_MainCaravan");
             caravanObject.transform.position = pos;
             caravanObject.transform.SetParent(transform, false);
 
@@ -45,22 +51,22 @@ namespace KitchenCaravan.VerticalSlice
             caravan.Configure(new CaravanRuntimeSettings
             {
                 levelNumber = LevelRuntimeSettings.LevelNumber,
-                chainLength = Mathf.Clamp(LevelRuntimeSettings.ChainLength, 1, 100),
-                segmentBaseHp = LevelRuntimeSettings.SegmentBaseHp,
+                chainLength = 10,
+                segmentBaseHp = 20,
                 segmentLevelGrowth = LevelRuntimeSettings.SegmentLevelGrowth,
-                segmentPositionGrowth = LevelRuntimeSettings.SegmentPositionGrowth,
+                segmentPositionGrowth = 0.25f,
                 normalPayloadHpMultiplier = LevelRuntimeSettings.NormalPayloadHpMultiplier,
                 chestPayloadHpMultiplier = LevelRuntimeSettings.ChestPayloadHpMultiplier,
                 heavyPayloadHpMultiplier = LevelRuntimeSettings.HeavyPayloadHpMultiplier,
-                captainHp = LevelRuntimeSettings.CaptainHp,
-                moveSpeed = LevelRuntimeSettings.ChainMoveSpeed,
-                segmentSpacing = LevelRuntimeSettings.SegmentSpacing,
+                captainHp = 100,
+                moveSpeed = 2f,
+                segmentSpacing = 0.9f,
                 routeData = LevelRuntimeSettings.RouteData,
                 segmentData = LevelRuntimeSettings.SegmentDefinitions
-            });
+            }, _flow);
 
             caravan.Destroyed += OnCaravanDestroyed;
-            _activeCaravans.Add(caravan);
+            _activeCaravan = caravan;
         }
 
         private void OnCaravanDestroyed(CaravanController caravan, bool countedAsDefeated)
@@ -68,7 +74,10 @@ namespace KitchenCaravan.VerticalSlice
             if (caravan != null)
             {
                 caravan.Destroyed -= OnCaravanDestroyed;
-                _activeCaravans.Remove(caravan);
+                if (_activeCaravan == caravan)
+                {
+                    _activeCaravan = null;
+                }
             }
 
             if (countedAsDefeated)
@@ -77,23 +86,12 @@ namespace KitchenCaravan.VerticalSlice
             }
         }
 
-        private void LateUpdate()
-        {
-            for (int i = _activeCaravans.Count - 1; i >= 0; i--)
-            {
-                if (_activeCaravans[i] == null)
-                {
-                    _activeCaravans.RemoveAt(i);
-                }
-            }
-        }
-
         private Vector3 GetSpawnPosition()
         {
-            var route = LevelRuntimeSettings.RouteData;
-            if (route != null && route.Points != null && route.Points.Count > 0)
+            var route = RouteSystem.Build(LevelRuntimeSettings.RouteData, transform.position);
+            if (route.points != null && route.points.Count > 0)
             {
-                return route.Points[0];
+                return route.points[0];
             }
 
             return transform.position;

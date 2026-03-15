@@ -6,13 +6,16 @@ namespace KitchenCaravan.VerticalSlice
     [RequireComponent(typeof(CircleCollider2D))]
     public class CaptainHead : MonoBehaviour, ICaravanDamageable
     {
-        [SerializeField] private Color _vulnerableColor = new Color(0.95f, 0.3f, 0.25f, 1f);
-        [SerializeField] private Color _invulnerableColor = new Color(0.95f, 0.75f, 0.2f, 1f);
-        [SerializeField] private Vector2 _size = new Vector2(0.95f, 0.95f);
+        [SerializeField] private Color _vulnerableColor = new Color(1f, 0.45f, 0.3f, 1f);
+        [SerializeField] private Color _invulnerableColor = new Color(1f, 0.72f, 0.2f, 1f);
+        [SerializeField] private Color _rageColor = new Color(1f, 0.1f, 0.1f, 1f);
+        [SerializeField] private Vector2 _size = new Vector2(1.2f, 1.2f);
 
         private CaravanController _controller;
         private int _hp;
         private bool _dead;
+        private bool _isRaging;
+        private SegmentHealthLabel _healthLabel;
 
         public void Initialize(CaravanController controller, int hp)
         {
@@ -21,16 +24,26 @@ namespace KitchenCaravan.VerticalSlice
             _dead = false;
             EnsurePhysics();
             EnsureVisual();
+            EnsureHealthLabel();
+            RefreshHealthLabel();
         }
 
         private void Start()
         {
             EnsurePhysics();
             EnsureVisual();
+            EnsureHealthLabel();
+            RefreshHealthLabel();
         }
 
         private void Update()
         {
+            EnsureVisual();
+        }
+
+        public void SetRageState(bool isRaging)
+        {
+            _isRaging = isRaging;
             EnsureVisual();
         }
 
@@ -50,6 +63,7 @@ namespace KitchenCaravan.VerticalSlice
             result = DamageSystem.Evaluate(request);
             _hp -= result.finalDamage;
             DamageFeedbackService.ShowDamage(result);
+            RefreshHealthLabel();
             if (_hp > 0)
             {
                 return true;
@@ -74,6 +88,23 @@ namespace KitchenCaravan.VerticalSlice
             transform.position = worldPosition;
         }
 
+        private void EnsureHealthLabel()
+        {
+            if (_healthLabel == null)
+            {
+                _healthLabel = GetComponent<SegmentHealthLabel>();
+                if (_healthLabel == null)
+                {
+                    _healthLabel = gameObject.AddComponent<SegmentHealthLabel>();
+                }
+            }
+        }
+
+        private void RefreshHealthLabel()
+        {
+            _healthLabel?.SetValue(_hp);
+        }
+
         private void EnsureVisual()
         {
             var sr = GetComponent<SpriteRenderer>();
@@ -82,14 +113,16 @@ namespace KitchenCaravan.VerticalSlice
                 sr.sprite = RuntimeSpriteFactory.WhiteSquare;
             }
 
-            sr.color = _controller != null && _controller.HasLivingSegments ? _invulnerableColor : _vulnerableColor;
-            transform.localScale = new Vector3(_size.x, _size.y, 1f);
+            sr.color = _isRaging ? _rageColor : (_controller != null && _controller.HasLivingSegments ? _invulnerableColor : _vulnerableColor);
+            float breathe = 1f + Mathf.Sin(Time.time * 2f) * 0.04f;
+            float ragePulse = _isRaging ? 1f + Mathf.Sin(Time.time * 18f) * 0.12f : 1f;
+            transform.localScale = new Vector3(_size.x * breathe * ragePulse, _size.y * breathe * ragePulse, 1f);
         }
 
         private void EnsurePhysics()
         {
             var collider = GetComponent<CircleCollider2D>();
-            collider.radius = 0.5f;
+            collider.radius = 0.58f;
             collider.isTrigger = false;
         }
     }

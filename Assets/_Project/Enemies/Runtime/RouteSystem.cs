@@ -16,21 +16,13 @@ namespace KitchenCaravan.VerticalSlice
     {
         public static RouteLayoutData Build(EnemyRouteData routeData, Vector3 fallbackOrigin)
         {
-            var points = new List<Vector3>();
-            if (routeData != null && routeData.Points != null)
-            {
-                for (int i = 0; i < routeData.Points.Count; i++)
-                {
-                    points.Add(routeData.Points[i]);
-                }
-            }
-
+            var points = BuildSerpentinePoints();
             if (points.Count < 2)
             {
-                Vector3 start = points.Count == 1 ? points[0] : fallbackOrigin;
+                Vector3 start = fallbackOrigin;
                 points.Clear();
                 points.Add(start);
-                points.Add(start + Vector3.right * 8f);
+                points.Add(start + Vector3.down * 8f);
             }
 
             var cumulativeDistances = new List<float> { 0f };
@@ -77,7 +69,7 @@ namespace KitchenCaravan.VerticalSlice
 
             if (distance >= layout.totalLength)
             {
-                return layout.points[layout.points.Count - 1] + layout.endDirection * (distance - layout.totalLength);
+                return layout.points[layout.points.Count - 1];
             }
 
             for (int i = 1; i < layout.cumulativeDistances.Count; i++)
@@ -99,6 +91,44 @@ namespace KitchenCaravan.VerticalSlice
             }
 
             return layout.points[layout.points.Count - 1];
+        }
+
+        private static List<Vector3> BuildSerpentinePoints()
+        {
+            Camera camera = Camera.main;
+            float halfHeight = camera != null ? camera.orthographicSize : 5.5f;
+            float halfWidth = camera != null ? halfHeight * camera.aspect : 5.2f;
+
+            float routeHalfWidth = Mathf.Max(halfWidth * 0.74f, 2.4f);
+            float leftX = -routeHalfWidth;
+            float rightX = routeHalfWidth;
+            float topY = halfHeight * 0.84f;
+            float bottomY = -halfHeight * 0.78f;
+            int rows = 7;
+            float finalApproachY = Mathf.Lerp(topY, bottomY, 0.88f);
+            float rowStep = (topY - finalApproachY) / Mathf.Max(1, rows - 1);
+
+            var points = new List<Vector3>(rows * 2 + 2);
+            float y = topY;
+            bool goRight = true;
+            points.Add(new Vector3(leftX, y, 0f));
+            for (int row = 0; row < rows; row++)
+            {
+                float x = goRight ? rightX : leftX;
+                points.Add(new Vector3(x, y, 0f));
+                if (row == rows - 1)
+                {
+                    break;
+                }
+
+                y -= rowStep;
+                points.Add(new Vector3(x, y, 0f));
+                goRight = !goRight;
+            }
+
+            points.Add(new Vector3(0f, Mathf.Lerp(y, bottomY, 0.45f), 0f));
+            points.Add(new Vector3(0f, bottomY, 0f));
+            return points;
         }
     }
 }

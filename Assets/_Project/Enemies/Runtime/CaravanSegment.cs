@@ -8,6 +8,7 @@ namespace KitchenCaravan.VerticalSlice
     {
         private const int VisualAntCount = 7;
 
+        [SerializeField] private Color _bodyColor = new Color(0.28f, 0.78f, 0.32f, 0.95f);
         [SerializeField] private Color _normalColor = new Color(0.45f, 0.95f, 0.4f, 1f);
         [SerializeField] private Color _heavyColor = new Color(0.9f, 0.55f, 0.25f, 1f);
         [SerializeField] private Color _chestColor = new Color(1f, 0.88f, 0.25f, 1f);
@@ -20,6 +21,7 @@ namespace KitchenCaravan.VerticalSlice
         private SegmentHealthLabel _healthLabel;
         private SpriteRenderer _chestGlowRenderer;
         private SpriteRenderer _chestIconRenderer;
+        private Vector3 _baseScale = new Vector3(0.84f, 0.56f, 1f);
 
         public int SegmentIndex { get; private set; }
         public int CurrentHealth => _hp;
@@ -54,6 +56,7 @@ namespace KitchenCaravan.VerticalSlice
         private void Update()
         {
             UpdateChestHighlight();
+            UpdateBreathing();
         }
 
         public bool ApplyDamage(DamageRequest request, out DamageResult result)
@@ -99,7 +102,8 @@ namespace KitchenCaravan.VerticalSlice
         {
             var sr = GetComponent<SpriteRenderer>();
             sr.sprite = RuntimeSpriteFactory.WhiteSquare;
-            sr.color = new Color(0f, 0f, 0f, 0f);
+            sr.color = IsChestCarrier ? new Color(0.95f, 0.78f, 0.2f, 0.95f) : _bodyColor;
+            transform.localScale = _baseScale;
 
             if (_payloadRenderer == null)
             {
@@ -108,7 +112,7 @@ namespace KitchenCaravan.VerticalSlice
                 {
                     var payloadObject = new GameObject("Payload");
                     payloadObject.transform.SetParent(transform, false);
-                    payloadObject.transform.localPosition = new Vector3(0f, 0.16f, 0f);
+                    payloadObject.transform.localPosition = new Vector3(0f, 0.16f, -0.05f);
                     _payloadRenderer = payloadObject.AddComponent<SpriteRenderer>();
                 }
                 else
@@ -210,6 +214,13 @@ namespace KitchenCaravan.VerticalSlice
                 return;
             }
 
+            var rootRenderer = GetComponent<SpriteRenderer>();
+            if (rootRenderer != null)
+            {
+                rootRenderer.color = IsChestCarrier ? new Color(0.92f, 0.72f, 0.2f, 0.98f) : _bodyColor;
+                rootRenderer.sortingOrder = 5;
+            }
+
             _payloadRenderer.color = GetPayloadColor();
             float tint = Mathf.Clamp01(1f - (SegmentIndex - 1) * 0.03f);
             _payloadRenderer.color *= tint;
@@ -232,10 +243,13 @@ namespace KitchenCaravan.VerticalSlice
 
         private void RefreshHealthLabel()
         {
-            if (_healthLabel != null)
-            {
-                _healthLabel.SetValue(_hp);
-            }
+            _healthLabel?.SetValue(_hp);
+        }
+
+        private void UpdateBreathing()
+        {
+            float pulse = 1f + Mathf.Sin((Time.time + SegmentIndex * 0.25f) * 2f) * 0.05f;
+            transform.localScale = _baseScale * pulse;
         }
 
         private void UpdateChestHighlight()
@@ -269,7 +283,7 @@ namespace KitchenCaravan.VerticalSlice
         {
             float x = -0.3f + (index % 4) * 0.2f;
             float y = index < 4 ? -0.12f : -0.3f;
-            return new Vector3(x, y, 0f);
+            return new Vector3(x, y, -0.08f);
         }
 
         private void EnsurePhysics()

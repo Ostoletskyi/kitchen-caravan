@@ -8,8 +8,10 @@ namespace KitchenCaravan.VerticalSlice
     {
         [SerializeField] private Text _counterText;
         [SerializeField] private GameObject _winPanel;
+        [SerializeField] private GameObject _losePanel;
 
         private GameFlowController _flow;
+        private CaravanController _caravan;
 
         private void Start()
         {
@@ -24,6 +26,16 @@ namespace KitchenCaravan.VerticalSlice
             }
         }
 
+        private void Update()
+        {
+            if (_caravan == null)
+            {
+                _caravan = FindFirstObjectByType<CaravanController>();
+            }
+
+            RefreshCounter();
+        }
+
         public void Bind(GameFlowController flow)
         {
             _flow = flow;
@@ -31,11 +43,14 @@ namespace KitchenCaravan.VerticalSlice
 
             flow.DefeatedChanged -= OnDefeatedChanged;
             flow.WinTriggered -= OnWinTriggered;
+            flow.LoseTriggered -= OnLoseTriggered;
             flow.DefeatedChanged += OnDefeatedChanged;
             flow.WinTriggered += OnWinTriggered;
+            flow.LoseTriggered += OnLoseTriggered;
 
-            OnDefeatedChanged(flow.DefeatedCount, flow.TargetDefeats);
+            RefreshCounter();
             _winPanel.SetActive(flow.State == GameFlowController.FlowState.Win);
+            _losePanel.SetActive(flow.State == GameFlowController.FlowState.Lose);
         }
 
         private void OnDestroy()
@@ -47,14 +62,12 @@ namespace KitchenCaravan.VerticalSlice
 
             _flow.DefeatedChanged -= OnDefeatedChanged;
             _flow.WinTriggered -= OnWinTriggered;
+            _flow.LoseTriggered -= OnLoseTriggered;
         }
 
         private void OnDefeatedChanged(int current, int target)
         {
-            if (_counterText != null)
-            {
-                _counterText.text = $"Caravans Destroyed: {current} / {target}";
-            }
+            RefreshCounter();
         }
 
         private void OnWinTriggered()
@@ -65,9 +78,36 @@ namespace KitchenCaravan.VerticalSlice
             }
         }
 
+        private void OnLoseTriggered()
+        {
+            if (_losePanel != null)
+            {
+                _losePanel.SetActive(true);
+            }
+        }
+
+        private void RefreshCounter()
+        {
+            if (_counterText == null)
+            {
+                return;
+            }
+
+            if (_caravan == null)
+            {
+                _counterText.text = "Segments Left: --";
+                return;
+            }
+
+            int segmentsLeft = _caravan.LivingSegmentCount;
+            _counterText.text = _caravan.IsRaging
+                ? $"Segments Left: {segmentsLeft}   CAPTAIN RAGE"
+                : $"Segments Left: {segmentsLeft}";
+        }
+
         private void EnsureHudExists(GameFlowController flow)
         {
-            if (_counterText != null && _winPanel != null)
+            if (_counterText != null && _winPanel != null && _losePanel != null)
             {
                 return;
             }
@@ -86,37 +126,45 @@ namespace KitchenCaravan.VerticalSlice
             _counterText = CreateText(
                 canvas.transform,
                 "Counter",
-                "Caravans: 0 / 0",
+                "Segments Left: 10",
                 new Vector2(0f, -26f),
                 new Vector2(0.5f, 1f),
                 new Vector2(0.5f, 1f),
-                new Vector2(880f, 80f),
+                new Vector2(980f, 80f),
                 40,
                 TextAnchor.MiddleCenter);
 
-            _winPanel = new GameObject("LevelCompletePanel", typeof(RectTransform), typeof(Image));
-            _winPanel.transform.SetParent(canvas.transform, false);
-            var panelRT = _winPanel.GetComponent<RectTransform>();
+            _winPanel = CreateStatePanel(canvas.transform, "YOU WIN", flow.RestartLevel, flow.GoToMainMenu, "WinPanel");
+            _losePanel = CreateStatePanel(canvas.transform, "YOU LOSE", flow.RestartLevel, flow.GoToMainMenu, "LosePanel");
+            _winPanel.SetActive(false);
+            _losePanel.SetActive(false);
+        }
+
+        private static GameObject CreateStatePanel(Transform canvas, string title, UnityEngine.Events.UnityAction restart, UnityEngine.Events.UnityAction mainMenu, string objectName)
+        {
+            var panel = new GameObject(objectName, typeof(RectTransform), typeof(Image));
+            panel.transform.SetParent(canvas, false);
+            var panelRT = panel.GetComponent<RectTransform>();
             panelRT.anchorMin = new Vector2(0.5f, 0.5f);
             panelRT.anchorMax = new Vector2(0.5f, 0.5f);
             panelRT.pivot = new Vector2(0.5f, 0.5f);
             panelRT.sizeDelta = new Vector2(700f, 420f);
             panelRT.anchoredPosition = Vector2.zero;
-            _winPanel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.8f);
+            panel.GetComponent<Image>().color = new Color(0f, 0f, 0f, 0.82f);
 
             CreateText(
-                _winPanel.transform,
-                "CompleteLabel",
-                "Level Complete",
+                panel.transform,
+                "Title",
+                title,
                 new Vector2(0f, 120f),
                 new Vector2(0.5f, 0.5f),
                 new Vector2(0.5f, 0.5f),
                 new Vector2(620f, 110f),
                 58,
                 TextAnchor.MiddleCenter);
-            CreateButton(_winPanel.transform, "RestartButton", "Restart", new Vector2(0f, 10f), flow.RestartLevel);
-            CreateButton(_winPanel.transform, "MainMenuButton", "Main Menu", new Vector2(0f, -105f), flow.GoToMainMenu);
-            _winPanel.SetActive(false);
+            CreateButton(panel.transform, "RestartButton", "Restart", new Vector2(0f, 10f), restart);
+            CreateButton(panel.transform, "MainMenuButton", "Main Menu", new Vector2(0f, -105f), mainMenu);
+            return panel;
         }
 
         private static Text CreateText(
