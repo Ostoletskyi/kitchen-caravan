@@ -71,21 +71,31 @@ namespace KitchenCaravan.VerticalSlice.Editor
             EditorGUILayout.LabelField("Caravan", EditorStyles.boldLabel);
             DrawProperty("_caravanChainLength");
             DrawProperty("_segmentBaseHp");
-            DrawProperty("_segmentHpIncrement");
+            DrawProperty("_segmentLevelGrowth");
+            DrawProperty("_segmentPositionGrowth");
+            DrawProperty("_normalPayloadHpMultiplier");
+            DrawProperty("_chestPayloadHpMultiplier");
+            DrawProperty("_heavyPayloadHpMultiplier");
             DrawProperty("_captainHp");
             DrawProperty("_caravanMovementSpeed");
             DrawProperty("_spawnDelay");
             DrawProperty("_segmentSpacing");
-            DrawProperty("_followLerpSpeed");
-            DrawProperty("_trailStep");
-            DrawProperty("_swayAmplitude");
-            DrawProperty("_swayFrequency");
+            DrawProperty("_segmentDefinitions");
             EditorGUILayout.Space(4f);
 
             EditorGUILayout.LabelField("Player", EditorStyles.boldLabel);
             DrawProperty("_playerMoveSpeed");
             DrawProperty("_playerFireRate");
-            DrawProperty("_bulletDamage");
+            EditorGUILayout.Space(4f);
+
+            EditorGUILayout.LabelField("Damage", EditorStyles.boldLabel);
+            DrawProperty("_weaponPower");
+            DrawProperty("_normalBuffPercent");
+            DrawProperty("_critBuffPercent");
+            DrawProperty("_upgradePercent");
+            DrawProperty("_purchasedBonus");
+            DrawProperty("_criticalChance");
+            DrawProperty("_criticalMultiplier");
         }
 
         private void DrawProperty(string propertyName)
@@ -93,7 +103,7 @@ namespace KitchenCaravan.VerticalSlice.Editor
             SerializedProperty property = _serializedConfig.FindProperty(propertyName);
             if (property != null)
             {
-                EditorGUILayout.PropertyField(property);
+                EditorGUILayout.PropertyField(property, true);
             }
         }
 

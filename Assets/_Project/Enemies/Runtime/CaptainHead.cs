@@ -8,7 +8,7 @@ namespace KitchenCaravan.VerticalSlice
     {
         [SerializeField] private Color _vulnerableColor = new Color(0.95f, 0.3f, 0.25f, 1f);
         [SerializeField] private Color _invulnerableColor = new Color(0.95f, 0.75f, 0.2f, 1f);
-        [SerializeField] private Vector2 _size = new Vector2(1f, 1f);
+        [SerializeField] private Vector2 _size = new Vector2(0.95f, 0.95f);
 
         private CaravanController _controller;
         private int _hp;
@@ -34,8 +34,9 @@ namespace KitchenCaravan.VerticalSlice
             EnsureVisual();
         }
 
-        public bool ApplyDamage(int amount)
+        public bool ApplyDamage(DamageRequest request, out DamageResult result)
         {
+            result = default;
             if (_dead)
             {
                 return false;
@@ -46,13 +47,16 @@ namespace KitchenCaravan.VerticalSlice
                 return false;
             }
 
-            _hp -= Mathf.Max(0, amount);
+            result = DamageSystem.Evaluate(request);
+            _hp -= result.finalDamage;
+            DamageFeedbackService.ShowDamage(result);
             if (_hp > 0)
             {
                 return true;
             }
 
             _dead = true;
+            DamageFeedbackService.ShowEffect(DamageFeedbackType.SegmentDestroyed, transform.position);
             if (_controller != null)
             {
                 _controller.NotifyCaptainDestroyed(this);
@@ -63,6 +67,11 @@ namespace KitchenCaravan.VerticalSlice
             }
 
             return true;
+        }
+
+        public void SetWorldPosition(Vector3 worldPosition)
+        {
+            transform.position = worldPosition;
         }
 
         private void EnsureVisual()

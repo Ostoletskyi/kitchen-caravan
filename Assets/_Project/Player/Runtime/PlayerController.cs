@@ -38,8 +38,13 @@ namespace KitchenCaravan.VerticalSlice
         {
             var sr = GetComponent<SpriteRenderer>();
             sr.sprite = RuntimeSpriteFactory.WhiteSquare;
-            sr.color = new Color(0.35f, 0.85f, 1f, 1f);
-            transform.localScale = new Vector3(0.9f, 0.9f, 1f);
+            sr.color = new Color(0f, 0f, 0f, 0f);
+            transform.localScale = Vector3.one;
+
+            if (GetComponent<DroneVisualController>() == null)
+            {
+                gameObject.AddComponent<DroneVisualController>();
+            }
         }
 
         private void EnsurePhysicsComponents()
@@ -50,7 +55,7 @@ namespace KitchenCaravan.VerticalSlice
                 collider = gameObject.AddComponent<BoxCollider2D>();
             }
 
-            collider.size = Vector2.one;
+            collider.size = new Vector2(0.9f, 0.9f);
 
             var body = GetComponent<Rigidbody2D>();
             if (body == null)

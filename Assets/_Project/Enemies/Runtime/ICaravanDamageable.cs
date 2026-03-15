@@ -2,6 +2,6 @@ namespace KitchenCaravan.VerticalSlice
 {
     public interface ICaravanDamageable
     {
-        bool ApplyDamage(int amount);
+        bool ApplyDamage(DamageRequest request, out DamageResult result);
     }
 }

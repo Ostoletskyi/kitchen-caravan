@@ -6,9 +6,6 @@ namespace KitchenCaravan.VerticalSlice
     public class EnemySpawner : MonoBehaviour
     {
         [SerializeField] private float _spawnInterval = 3f;
-        [SerializeField] private float _spawnY = 6f;
-        [SerializeField] private float _minX = -7.5f;
-        [SerializeField] private float _maxX = 7.5f;
 
         private float _nextSpawn;
         private GameFlowController _flow;
@@ -47,17 +44,19 @@ namespace KitchenCaravan.VerticalSlice
             var caravan = caravanObject.AddComponent<CaravanController>();
             caravan.Configure(new CaravanRuntimeSettings
             {
+                levelNumber = LevelRuntimeSettings.LevelNumber,
                 chainLength = Mathf.Clamp(LevelRuntimeSettings.ChainLength, 1, 100),
                 segmentBaseHp = LevelRuntimeSettings.SegmentBaseHp,
-                segmentHpIncrement = LevelRuntimeSettings.SegmentHpIncrement,
+                segmentLevelGrowth = LevelRuntimeSettings.SegmentLevelGrowth,
+                segmentPositionGrowth = LevelRuntimeSettings.SegmentPositionGrowth,
+                normalPayloadHpMultiplier = LevelRuntimeSettings.NormalPayloadHpMultiplier,
+                chestPayloadHpMultiplier = LevelRuntimeSettings.ChestPayloadHpMultiplier,
+                heavyPayloadHpMultiplier = LevelRuntimeSettings.HeavyPayloadHpMultiplier,
                 captainHp = LevelRuntimeSettings.CaptainHp,
                 moveSpeed = LevelRuntimeSettings.ChainMoveSpeed,
                 segmentSpacing = LevelRuntimeSettings.SegmentSpacing,
-                swayAmplitude = LevelRuntimeSettings.SwayAmplitude,
-                swayFrequency = LevelRuntimeSettings.SwayFrequency,
-                followLerpSpeed = LevelRuntimeSettings.FollowLerpSpeed,
-                trailStep = LevelRuntimeSettings.TrailStep,
-                routeData = LevelRuntimeSettings.RouteData
+                routeData = LevelRuntimeSettings.RouteData,
+                segmentData = LevelRuntimeSettings.SegmentDefinitions
             });
 
             caravan.Destroyed += OnCaravanDestroyed;
@@ -97,8 +96,7 @@ namespace KitchenCaravan.VerticalSlice
                 return route.Points[0];
             }
 
-            float x = Random.Range(_minX, _maxX);
-            return new Vector3(x, _spawnY, 0f);
+            return transform.position;
         }
     }
 }
