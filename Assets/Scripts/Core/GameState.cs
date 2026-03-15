@@ -6,6 +6,8 @@ namespace KitchenCaravan.Core
         MainMenu,
         Meta,
         Run,
+        Win,
+        Lose,
         Paused,
         GameOver
     }
