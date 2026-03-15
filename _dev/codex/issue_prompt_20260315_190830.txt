@@ -1,0 +1,8 @@
+You are Codex 5.3 acting as a senior Unity engineer. Fix these Unity compile errors in the current repo.
+Provide a unified diff patch (git apply compatible). Keep changes minimal.
+
+ERRORS:
+Assets\_Project\Enemies\Runtime\CaptainHead.cs(7,47): error CS0535: 'CaptainHead' does not implement interface member 'ICaravanDamageable.ApplyDamage(DamageRequest, out DamageResult)'
+Assets\_Project\Enemies\Runtime\CaravanSegment.cs(7,50): error CS0535: 'CaravanSegment' does not implement interface member 'ICaravanDamageable.ApplyDamage(DamageRequest, out DamageResult)'
+Assets\Scripts\Editor\PrototypeLevel01Builder.cs(70,13): error CS0104: 'RoutePath' is an ambiguous reference between 'KitchenCaravan.Caravan.RoutePath' and 'KitchenCaravan.Route.RoutePath'
+Assets\Scripts\Editor\PrototypeLevel01Builder.cs(70,60): error CS0104: 'RoutePath' is an ambiguous reference between 'KitchenCaravan.Caravan.RoutePath' and 'KitchenCaravan.Route.RoutePath'

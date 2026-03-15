@@ -67,7 +67,7 @@ namespace KitchenCaravan.Editor
             GameManager gameManager = gameManagerObject.AddComponent<GameManager>();
 
             GameObject routeObject = new GameObject("RouteObject");
-            RoutePath routePath = routeObject.AddComponent<RoutePath>();
+            KitchenCaravan.Route.RoutePath routePath = routeObject.AddComponent<KitchenCaravan.Route.RoutePath>();
 
             if (playerPrefab != null)
             {
