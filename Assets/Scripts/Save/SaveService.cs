@@ -13,16 +13,18 @@ namespace KitchenCaravan.Save
             string path = GetPath();
             if (!File.Exists(path))
             {
-                return null;
+                return SaveModel.CreateNew();
             }
 
             string json = File.ReadAllText(path);
             if (string.IsNullOrWhiteSpace(json))
             {
-                return null;
+                return SaveModel.CreateNew();
             }
 
-            return JsonUtility.FromJson<SaveModel>(json);
+            var model = JsonUtility.FromJson<SaveModel>(json) ?? SaveModel.CreateNew();
+            model.EnsureDefaults();
+            return model;
         }
 
         public void Save(SaveModel model)
@@ -32,6 +34,7 @@ namespace KitchenCaravan.Save
                 return;
             }
 
+            model.EnsureDefaults();
             model.version = SaveModel.Version;
             model.lastSaveUnix = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 

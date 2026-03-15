@@ -9,5 +9,12 @@ namespace KitchenCaravan.Data
         public LootTableSO defaultLootTable;
         public EnemyCatalogSO enemyCatalog;
         public UpgradeCatalogSO upgradeCatalog;
+        public MetaProgressionConfigSO metaProgressionConfig;
+        public RewardTableSO rewardTable;
+        public DroneUpgradeConfigSO droneUpgradeConfig;
+        public UIScreenFlowConfigSO uiScreenFlow;
+        public MapConfigSO[] maps;
+        public AbilityCardDefinitionSO[] abilityCards;
+        public DroneSkinDefinitionSO[] droneSkins;
     }
 }
