@@ -8,15 +8,26 @@ namespace KitchenCaravan.Route
     {
         [SerializeField] private List<Vector3> _localPoints = new List<Vector3>
         {
-            new Vector3(-2.5f, 6.5f, 0f),
-            new Vector3(-2.5f, 3f, 0f),
-            new Vector3(2.25f, 1.5f, 0f),
-            new Vector3(2.25f, -1.5f, 0f),
-            new Vector3(-1.5f, -3f, 0f)
+            new Vector3(-4.6f, 6.4f, 0f),
+            new Vector3(4.4f, 6.4f, 0f),
+            new Vector3(4.4f, 4.6f, 0f),
+            new Vector3(-4.4f, 4.6f, 0f),
+            new Vector3(-4.4f, 2.8f, 0f),
+            new Vector3(4.4f, 2.8f, 0f),
+            new Vector3(4.4f, 1.0f, 0f),
+            new Vector3(-4.4f, 1.0f, 0f),
+            new Vector3(-4.4f, -0.8f, 0f),
+            new Vector3(4.4f, -0.8f, 0f),
+            new Vector3(4.4f, -2.6f, 0f),
+            new Vector3(-2.2f, -2.6f, 0f),
+            new Vector3(0f, -5.6f, 0f)
         };
         [SerializeField] private bool _drawGizmos = true;
-        [SerializeField] private Color _routeColor = new Color(0.95f, 0.75f, 0.25f, 1f);
-        [SerializeField] private Color _pointColor = new Color(0.2f, 0.9f, 1f, 1f);
+        [SerializeField] private Color _routeColor = new Color(1f, 0.75f, 0.22f, 1f);
+        [SerializeField] private Color _pointColor = new Color(0.25f, 0.9f, 1f, 1f);
+        [SerializeField] private Color _startColor = new Color(0.35f, 1f, 0.45f, 1f);
+        [SerializeField] private Color _goalColor = new Color(1f, 0.3f, 0.3f, 1f);
+        [SerializeField] private float _gizmoPointRadius = 0.12f;
 
         public IReadOnlyList<Vector3> LocalPoints => _localPoints;
         public int PointCount => _localPoints != null ? _localPoints.Count : 0;
@@ -32,6 +43,11 @@ namespace KitchenCaravan.Route
             return transform.TransformPoint(_localPoints[index]);
         }
 
+        private void Reset()
+        {
+            transform.position = Vector3.zero;
+        }
+
         private void OnDrawGizmos()
         {
             if (!_drawGizmos || _localPoints == null || _localPoints.Count == 0)
@@ -42,7 +58,7 @@ namespace KitchenCaravan.Route
             Gizmos.color = _pointColor;
             for (int i = 0; i < _localPoints.Count; i++)
             {
-                Gizmos.DrawSphere(transform.TransformPoint(_localPoints[i]), 0.12f);
+                Gizmos.DrawSphere(transform.TransformPoint(_localPoints[i]), _gizmoPointRadius);
             }
 
             Gizmos.color = _routeColor;
@@ -50,6 +66,11 @@ namespace KitchenCaravan.Route
             {
                 Gizmos.DrawLine(transform.TransformPoint(_localPoints[i - 1]), transform.TransformPoint(_localPoints[i]));
             }
+
+            Gizmos.color = _startColor;
+            Gizmos.DrawSphere(transform.TransformPoint(_localPoints[0]), _gizmoPointRadius * 1.8f);
+            Gizmos.color = _goalColor;
+            Gizmos.DrawSphere(transform.TransformPoint(_localPoints[_localPoints.Count - 1]), _gizmoPointRadius * 2.1f);
         }
     }
 }

@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
-using KitchenCaravan.Route;
 using KitchenCaravan.Core;
+using KitchenCaravan.Route;
 
 namespace KitchenCaravan.Caravan
 {
-    // Moves the captain and 8 segments along a fixed route and closes gaps after segment destruction.
+    // Owns the full caravan runtime: movement on the route, target selection, collapse, and win/lose hooks.
     public sealed class CaravanController : MonoBehaviour
     {
         [SerializeField] private RoutePath _routePath;
@@ -17,13 +17,24 @@ namespace KitchenCaravan.Caravan
         private readonly List<SegmentController> _segments = new List<SegmentController>(16);
         private readonly RouteSampler _routeSampler = new RouteSampler();
 
+        private static readonly SegmentPayloadType[] PayloadCycle =
+        {
+            SegmentPayloadType.Bread,
+            SegmentPayloadType.Cheese,
+            SegmentPayloadType.Tomato,
+            SegmentPayloadType.Cucumber,
+            SegmentPayloadType.Bacon,
+            SegmentPayloadType.Egg
+        };
+
         private CaptainController _captain;
         private GameManager _gameManager;
         private float _captainDistance;
+        private float _rageCycleElapsed;
         private bool _initialized;
 
-        public IReadOnlyList<SegmentController> Segments => _segments;
         public bool HasRemainingSegments => _segments.Count > 0;
+        public int RemainingSegments => _segments.Count;
 
         public void Initialize(RoutePath routePath, CaravanConfig config, GameManager gameManager)
         {
@@ -33,19 +44,64 @@ namespace KitchenCaravan.Caravan
             BuildCaravan();
         }
 
+        public bool TryGetAimPoint(Vector3 origin, out Vector3 aimPoint)
+        {
+            for (int i = 0; i < _segments.Count; i++)
+            {
+                if (_segments[i] == null)
+                {
+                    continue;
+                }
+
+                aimPoint = _segments[i].DamageAnchor.position;
+                return true;
+            }
+
+            if (_captain != null && _captain.IsVulnerable)
+            {
+                aimPoint = _captain.DamageAnchor.position;
+                return true;
+            }
+
+            aimPoint = origin + Vector3.up * 8f;
+            return false;
+        }
+
+        public bool TryGetFrontPosition(out Vector3 frontPosition)
+        {
+            if (_captain != null)
+            {
+                frontPosition = _captain.transform.position;
+                return true;
+            }
+
+            frontPosition = transform.position;
+            return false;
+        }
+
         private void Update()
         {
-            if (!_initialized || _config == null || _gameManager == null || !_gameManager.IsGameplayActive)
+            if (!_initialized || _config == null || _routePath == null || _gameManager == null || !_gameManager.IsGameplayActive)
             {
                 return;
             }
 
-            _captainDistance += _config.moveSpeed * Time.deltaTime;
+            _rageCycleElapsed += Time.deltaTime;
+            bool isRaging = IsRaging();
+            float currentSpeed = _config.moveSpeed * (isRaging ? _config.rageSpeedMultiplier : 1f);
+            _captainDistance += currentSpeed * Time.deltaTime;
+            if (_captain != null)
+            {
+                _captain.SetRaging(isRaging);
+            }
+
             float routeLength = _routeSampler.GetRouteLength();
             if (_captainDistance >= routeLength)
             {
                 _captainDistance = routeLength;
+                ApplyFormation(Time.deltaTime);
                 _gameManager.TriggerLose();
+                return;
             }
 
             ApplyFormation(Time.deltaTime);
@@ -61,23 +117,25 @@ namespace KitchenCaravan.Caravan
 
             _routeSampler.Rebuild(_routePath);
             _captainDistance = Mathf.Max(0f, _config.initialCaptainDistance);
+            _rageCycleElapsed = 0f;
 
             _captain = InstantiateCaptain();
             _captain.Initialize(_config.captainHP);
             _captain.Destroyed += HandleCaptainDestroyed;
 
-            for (int i = 0; i < Mathf.Max(1, _config.initialSegmentCount); i++)
+            int count = Mathf.Clamp(_config.initialSegmentCount, 1, 24);
+            for (int i = 0; i < count; i++)
             {
                 int index = i + 1;
                 SegmentController segment = InstantiateSegment(index);
                 SegmentData data = new SegmentData
                 {
                     SegmentIndex = index,
-                    MaxHP = Mathf.RoundToInt(_config.baseHP * (1f + i * _config.positionGrowth)),
-                    CurrentHP = Mathf.RoundToInt(_config.baseHP * (1f + i * _config.positionGrowth)),
-                    PayloadType = SegmentPayloadType.Bread,
+                    MaxHP = _config.GetSegmentHp(index),
+                    CurrentHP = _config.GetSegmentHp(index),
+                    PayloadType = PayloadCycle[i % PayloadCycle.Length],
                     IsChestCarrier = false,
-                    DistanceOnPath = 0f
+                    DistanceOnPath = Mathf.Max(0f, _captainDistance - index * _config.segmentSpacing)
                 };
 
                 segment.Initialize(data);
@@ -86,31 +144,29 @@ namespace KitchenCaravan.Caravan
             }
 
             SnapFormation();
+            RefreshCaptainState();
             _initialized = true;
+        }
+
+        private bool IsRaging()
+        {
+            float cycleLength = Mathf.Max(0.1f, _config.rageInterval + _config.rageDuration);
+            float cycleTime = _rageCycleElapsed % cycleLength;
+            return cycleTime >= _config.rageInterval;
         }
 
         private void HandleSegmentDestroyed(SegmentController segment)
         {
             segment.Destroyed -= HandleSegmentDestroyed;
             _segments.Remove(segment);
-            if (Application.isPlaying)
-            {
-                Destroy(segment.gameObject);
-            }
-            else
-            {
-                DestroyImmediate(segment.gameObject);
-            }
+            TemporaryDisable(segment.gameObject);
 
             for (int i = 0; i < _segments.Count; i++)
             {
                 _segments[i].SetSegmentIndex(i + 1);
             }
 
-            if (_captain != null)
-            {
-                _captain.SetVulnerable(_segments.Count == 0);
-            }
+            RefreshCaptainState();
         }
 
         private void HandleCaptainDestroyed()
@@ -118,6 +174,24 @@ namespace KitchenCaravan.Caravan
             if (_gameManager != null)
             {
                 _gameManager.TriggerWin();
+            }
+
+            if (_captain != null)
+            {
+                TemporaryDisable(_captain.gameObject);
+            }
+        }
+
+        private void RefreshCaptainState()
+        {
+            if (_captain != null)
+            {
+                _captain.SetVulnerable(_segments.Count == 0);
+            }
+
+            if (_gameManager != null)
+            {
+                _gameManager.SetRemainingTargets(_segments.Count + (_captain != null ? 1 : 0), _segments.Count);
             }
         }
 
@@ -167,11 +241,15 @@ namespace KitchenCaravan.Caravan
         {
             if (_captainPrefab != null)
             {
-                return Instantiate(_captainPrefab, transform);
+                CaptainController instance = Instantiate(_captainPrefab, transform);
+                instance.name = "Captain";
+                return instance;
             }
 
             GameObject go = new GameObject("Captain");
             go.transform.SetParent(transform, false);
+            go.AddComponent<CircleCollider2D>();
+            go.AddComponent<SpriteRenderer>();
             return go.AddComponent<CaptainController>();
         }
 
@@ -186,7 +264,29 @@ namespace KitchenCaravan.Caravan
 
             GameObject go = new GameObject($"Segment_{index:00}");
             go.transform.SetParent(transform, false);
+            go.AddComponent<CircleCollider2D>();
+            go.AddComponent<SpriteRenderer>();
+            go.AddComponent<SegmentHealth>();
             return go.AddComponent<SegmentController>();
+        }
+
+        private void TemporaryDisable(GameObject target)
+        {
+            Collider2D collider = target.GetComponent<Collider2D>();
+            if (collider != null)
+            {
+                collider.enabled = false;
+            }
+
+            target.SetActive(false);
+            if (Application.isPlaying)
+            {
+                Destroy(target, Mathf.Max(0.01f, _config != null ? _config.destructionPause : 0.02f));
+            }
+            else
+            {
+                DestroyImmediate(target);
+            }
         }
 
         private void Cleanup()
@@ -196,7 +296,7 @@ namespace KitchenCaravan.Caravan
                 _captain.Destroyed -= HandleCaptainDestroyed;
             }
 
-            for (int i = _segments.Count - 1; i >= 0; i--)
+            for (int i = 0; i < _segments.Count; i++)
             {
                 if (_segments[i] != null)
                 {
@@ -216,9 +316,9 @@ namespace KitchenCaravan.Caravan
             }
 
             _routeSampler.Rebuild(_routePath);
-            Gizmos.color = Color.red;
+            Gizmos.color = new Color(1f, 0.3f, 0.2f, 1f);
             Gizmos.DrawSphere(_routeSampler.GetPointAtDistance(_config.initialCaptainDistance), 0.16f);
-            Gizmos.color = Color.cyan;
+            Gizmos.color = new Color(0.1f, 0.9f, 1f, 1f);
             for (int i = 0; i < Mathf.Max(1, _config.initialSegmentCount); i++)
             {
                 float distance = Mathf.Max(0f, _config.initialCaptainDistance - ((i + 1) * _config.segmentSpacing));

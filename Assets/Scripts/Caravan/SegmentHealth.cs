@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace KitchenCaravan.Caravan
 {
-    // Stores mutable shared HP for one segment and exposes damage application.
+    // Stores mutable shared HP for one segment and exposes simple damage application.
     public sealed class SegmentHealth : MonoBehaviour
     {
         [SerializeField] private int _currentHP;
@@ -17,9 +17,15 @@ namespace KitchenCaravan.Caravan
             _currentHP = _maxHP;
         }
 
-        public bool ApplyDamage(int amount)
+        public int ApplyDamage(int amount)
         {
-            _currentHP -= Mathf.Max(0, amount);
+            int applied = Mathf.Max(0, amount);
+            _currentHP = Mathf.Max(0, _currentHP - applied);
+            return applied;
+        }
+
+        public bool IsDepleted()
+        {
             return _currentHP <= 0;
         }
     }

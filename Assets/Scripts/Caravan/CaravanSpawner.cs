@@ -4,7 +4,7 @@ using KitchenCaravan.Route;
 
 namespace KitchenCaravan.Caravan
 {
-    // Spawns and configures the single Level 1 caravan.
+    // Spawns and configures the single Level 1 caravan at scene start.
     public sealed class CaravanSpawner : MonoBehaviour
     {
         [SerializeField] private RoutePath _routePath;
@@ -19,11 +19,11 @@ namespace KitchenCaravan.Caravan
             Spawn();
         }
 
-        public void Spawn()
+        public CaravanController Spawn()
         {
             if (_spawnedCaravan != null)
             {
-                return;
+                return _spawnedCaravan;
             }
 
             if (_gameManager == null)
@@ -43,6 +43,12 @@ namespace KitchenCaravan.Caravan
             }
 
             _spawnedCaravan.Initialize(_routePath, _caravanConfig, _gameManager);
+            if (_gameManager != null)
+            {
+                _gameManager.RegisterCaravan(_spawnedCaravan);
+            }
+
+            return _spawnedCaravan;
         }
     }
 }

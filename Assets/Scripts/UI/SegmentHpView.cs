@@ -3,16 +3,18 @@ using KitchenCaravan.Utils;
 
 namespace KitchenCaravan.UI
 {
-    // World-space HP text that stays above a segment and updates in real time.
+    // World-space HP text that stays above a segment and always faces the camera.
     public sealed class SegmentHpView : MonoBehaviour
     {
-        [SerializeField] private Vector3 _offset = new Vector3(0f, 0.7f, 0f);
+        [SerializeField] private Vector3 _offset = new Vector3(0f, 0.72f, 0f);
 
         private TextMesh _mainText;
         private TextMesh _shadowText;
+        private Camera _camera;
 
         private void Awake()
         {
+            _camera = Camera.main;
             EnsureMeshes();
         }
 
@@ -27,6 +29,15 @@ namespace KitchenCaravan.UI
         private void LateUpdate()
         {
             transform.localPosition = _offset;
+            if (_camera == null)
+            {
+                _camera = Camera.main;
+            }
+
+            if (_camera != null)
+            {
+                transform.forward = _camera.transform.forward;
+            }
         }
 
         private void EnsureMeshes()
@@ -61,7 +72,7 @@ namespace KitchenCaravan.UI
 
             textMesh.anchor = TextAnchor.MiddleCenter;
             textMesh.alignment = TextAlignment.Center;
-            textMesh.characterSize = 0.12f;
+            textMesh.characterSize = 0.11f;
             textMesh.fontSize = 36;
             textMesh.fontStyle = FontStyle.Bold;
             textMesh.color = color;

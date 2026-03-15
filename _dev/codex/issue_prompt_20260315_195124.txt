@@ -1,0 +1,7 @@
+You are Codex 5.3 acting as a senior Unity engineer. Fix these Unity compile errors in the current repo.
+Provide a unified diff patch (git apply compatible). Keep changes minimal.
+
+ERRORS:
+Assets\Scripts\Editor\PrototypeLevel01Builder.cs(70,13): error CS0104: 'RoutePath' is an ambiguous reference between 'KitchenCaravan.Caravan.RoutePath' and 'KitchenCaravan.Route.RoutePath'
+Assets\Scripts\Editor\PrototypeLevel01Builder.cs(70,60): error CS0104: 'RoutePath' is an ambiguous reference between 'KitchenCaravan.Caravan.RoutePath' and 'KitchenCaravan.Route.RoutePath'
+Assets\Scripts\Editor\PrototypeLevel01Builder.cs(170,31): error CS0246: The type or namespace name 'FloatingDamageNumber' could not be found (are you missing a using directive or an assembly reference?)

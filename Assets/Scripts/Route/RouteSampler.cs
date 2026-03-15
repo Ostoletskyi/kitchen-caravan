@@ -12,11 +12,6 @@ namespace KitchenCaravan.Route
         private Vector3 _startDirection = Vector3.down;
         private Vector3 _endDirection = Vector3.down;
 
-        public float GetRouteLength()
-        {
-            return _routeLength;
-        }
-
         public void Rebuild(RoutePath routePath)
         {
             _points.Clear();
@@ -60,6 +55,11 @@ namespace KitchenCaravan.Route
             }
         }
 
+        public float GetRouteLength()
+        {
+            return _routeLength;
+        }
+
         public Vector3 GetPointAtDistance(float distance)
         {
             if (_points.Count == 0)
@@ -78,25 +78,16 @@ namespace KitchenCaravan.Route
                 return _points[_points.Count - 1];
             }
 
-            for (int i = 1; i < _cumulativeDistances.Count; i++)
+            int index = FindSegmentIndex(distance);
+            float segmentStart = _cumulativeDistances[index - 1];
+            float segmentLength = _cumulativeDistances[index] - segmentStart;
+            if (segmentLength <= 0.0001f)
             {
-                if (distance > _cumulativeDistances[i])
-                {
-                    continue;
-                }
-
-                float segmentStart = _cumulativeDistances[i - 1];
-                float segmentLength = _cumulativeDistances[i] - segmentStart;
-                if (segmentLength <= 0.0001f)
-                {
-                    return _points[i];
-                }
-
-                float t = (distance - segmentStart) / segmentLength;
-                return Vector3.Lerp(_points[i - 1], _points[i], t);
+                return _points[index];
             }
 
-            return _points[_points.Count - 1];
+            float t = (distance - segmentStart) / segmentLength;
+            return Vector3.Lerp(_points[index - 1], _points[index], t);
         }
 
         public Vector3 GetDirectionAtDistance(float distance)
@@ -117,18 +108,34 @@ namespace KitchenCaravan.Route
                 return _endDirection;
             }
 
-            for (int i = 1; i < _cumulativeDistances.Count; i++)
-            {
-                if (distance > _cumulativeDistances[i])
-                {
-                    continue;
-                }
+            int index = FindSegmentIndex(distance);
+            Vector3 direction = (_points[index] - _points[index - 1]).normalized;
+            return direction.sqrMagnitude > 0.0001f ? direction : _startDirection;
+        }
 
-                Vector3 direction = (_points[i] - _points[i - 1]).normalized;
-                return direction.sqrMagnitude > 0.0001f ? direction : _startDirection;
+        private int FindSegmentIndex(float distance)
+        {
+            int low = 1;
+            int high = _cumulativeDistances.Count - 1;
+            while (low <= high)
+            {
+                int mid = (low + high) / 2;
+                if (distance <= _cumulativeDistances[mid])
+                {
+                    if (mid == 0 || distance > _cumulativeDistances[mid - 1])
+                    {
+                        return mid;
+                    }
+
+                    high = mid - 1;
+                }
+                else
+                {
+                    low = mid + 1;
+                }
             }
 
-            return _endDirection;
+            return _cumulativeDistances.Count - 1;
         }
     }
 }

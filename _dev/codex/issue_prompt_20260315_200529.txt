@@ -1,0 +1,5 @@
+You are Codex 5.3 acting as a senior Unity engineer. Fix this compile error in the current repo.
+Provide a unified diff patch (git apply compatible). Keep changes minimal.
+
+ERROR:
+Assets\Scripts\Editor\PrototypeLevel01Builder.cs(171,31): error CS0246: The type or namespace name 'FloatingDamageNumber' could not be found (are you missing a using directive or an assembly reference?)

@@ -1,17 +1,26 @@
 using System;
 using UnityEngine;
+using KitchenCaravan.Combat;
+using KitchenCaravan.UI;
+using KitchenCaravan.Utils;
 
 namespace KitchenCaravan.Caravan
 {
-    // Front unit of the caravan. It becomes vulnerable only when all segments are gone.
+    // Controls the lead caravan unit. It only becomes damageable after all segments are destroyed.
     [RequireComponent(typeof(CircleCollider2D))]
+    [RequireComponent(typeof(SpriteRenderer))]
     public sealed class CaptainController : MonoBehaviour
     {
         [SerializeField] private Transform _visualRoot;
         [SerializeField] private Transform _damageAnchor;
+        [SerializeField] private Color _lockedColor = new Color(0.95f, 0.74f, 0.24f, 1f);
+        [SerializeField] private Color _vulnerableColor = new Color(1f, 0.35f, 0.32f, 1f);
+        [SerializeField] private Color _rageColor = new Color(1f, 0.15f, 0.15f, 1f);
 
         private int _currentHP;
         private bool _vulnerable;
+        private bool _isRaging;
+        private SpriteRenderer _renderer;
 
         public event Action Destroyed;
 
@@ -21,15 +30,23 @@ namespace KitchenCaravan.Caravan
         public void Initialize(int hp)
         {
             _currentHP = Mathf.Max(1, hp);
-            EnsureVisuals();
+            EnsureSetup();
             SetVulnerable(false);
+            SetRaging(false);
         }
 
         public void SetVulnerable(bool vulnerable)
         {
             _vulnerable = vulnerable;
-            CircleCollider2D collider = GetComponent<CircleCollider2D>();
-            collider.enabled = vulnerable;
+            EnsureSetup();
+            GetComponent<CircleCollider2D>().enabled = vulnerable;
+            RefreshColor();
+        }
+
+        public void SetRaging(bool isRaging)
+        {
+            _isRaging = isRaging;
+            EnsureSetup();
             RefreshColor();
         }
 
@@ -61,58 +78,65 @@ namespace KitchenCaravan.Caravan
                 return false;
             }
 
-            _currentHP -= Mathf.Max(0, damage);
+            _currentHP = Mathf.Max(0, _currentHP - Mathf.Max(0, damage));
+            FloatingDamageNumber.Spawn(DamageAnchor.position, damage, false);
+            TemporaryHitFlash.Spawn(DamageAnchor.position, new Color(1f, 0.62f, 0.28f, 0.92f), 0.46f);
             if (_currentHP > 0)
             {
-                return false;
+                return true;
             }
 
+            TemporaryHitFlash.Spawn(transform.position, new Color(1f, 0.35f, 0.25f, 0.95f), 0.95f);
             Destroyed?.Invoke();
             return true;
         }
 
-        private void EnsureVisuals()
+        private void Awake()
+        {
+            EnsureSetup();
+        }
+
+        private void EnsureSetup()
         {
             if (_visualRoot == null)
             {
-                GameObject visual = new GameObject("VisualRoot");
-                visual.transform.SetParent(transform, false);
-                _visualRoot = visual.transform;
+                _visualRoot = transform;
             }
 
             if (_damageAnchor == null)
             {
-                GameObject damage = new GameObject("DamageAnchor");
-                damage.transform.SetParent(transform, false);
-                damage.transform.localPosition = new Vector3(0f, 0.28f, 0f);
-                _damageAnchor = damage.transform;
+                Transform existing = transform.Find("DamageAnchor");
+                if (existing == null)
+                {
+                    GameObject anchor = new GameObject("DamageAnchor");
+                    anchor.transform.SetParent(transform, false);
+                    anchor.transform.localPosition = new Vector3(0f, 0.34f, 0f);
+                    _damageAnchor = anchor.transform;
+                }
+                else
+                {
+                    _damageAnchor = existing;
+                }
             }
 
-            SpriteRenderer renderer = _visualRoot.GetComponent<SpriteRenderer>() ?? _visualRoot.gameObject.AddComponent<SpriteRenderer>();
-            renderer.sprite = KitchenCaravan.VerticalSlice.RuntimeSpriteFactory.WhiteSquare;
-            _visualRoot.localScale = new Vector3(0.95f, 0.7f, 1f);
+            _renderer = GetComponent<SpriteRenderer>();
+            _renderer.sprite = PrototypeSpriteLibrary.WhiteSquare;
             RefreshColor();
+            transform.localScale = new Vector3(0.95f, 0.8f, 1f);
+
+            CircleCollider2D collider = GetComponent<CircleCollider2D>();
+            collider.radius = 0.5f;
+            collider.isTrigger = false;
         }
 
         private void RefreshColor()
         {
-            if (_visualRoot == null)
+            if (_renderer == null)
             {
                 return;
             }
 
-            SpriteRenderer renderer = _visualRoot.GetComponent<SpriteRenderer>();
-            if (renderer != null)
-            {
-                renderer.color = _vulnerable ? new Color(0.95f, 0.35f, 0.35f, 1f) : new Color(0.95f, 0.75f, 0.25f, 1f);
-            }
-        }
-
-        private void Reset()
-        {
-            CircleCollider2D collider = GetComponent<CircleCollider2D>();
-            collider.radius = 0.42f;
-            collider.isTrigger = false;
+            _renderer.color = _isRaging ? _rageColor : (_vulnerable ? _vulnerableColor : _lockedColor);
         }
     }
 }

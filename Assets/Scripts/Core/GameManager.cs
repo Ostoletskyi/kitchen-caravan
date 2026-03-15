@@ -2,51 +2,54 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using KitchenCaravan.Caravan;
 
 namespace KitchenCaravan.Core
 {
-    // Lightweight prototype game manager that owns win/lose flow, simple UI, and restart support.
-    public class GameManager : MonoBehaviour
+    // Owns the minimal run state, end-of-level UI, restart support, and simple prototype HUD.
+    public sealed class GameManager : MonoBehaviour
     {
         public event Action<GameState> StateChanged;
-        public event Action<GameState, GameState> StateTransitioned;
 
-        [SerializeField] private GameState _initialState = GameState.Boot;
-        [SerializeField] private bool _autoEnterRunOnStart = true;
         [SerializeField] private Text _statusLabel;
+        [SerializeField] private Text _debugLabel;
         [SerializeField] private Button _restartButton;
+        [SerializeField] private KeyCode _restartKey = KeyCode.R;
 
-        public GameState CurrentState { get; private set; }
+        public GameState CurrentState { get; private set; } = GameState.Boot;
         public bool IsGameplayActive => CurrentState == GameState.Run;
+
+        private CaravanController _caravan;
+        private int _remainingTargets;
+        private int _remainingSegments;
 
         private void Awake()
         {
-            CurrentState = _initialState;
             EnsurePrototypeUi();
-            RefreshUi();
-            StateChanged?.Invoke(CurrentState);
+            ChangeState(GameState.Run);
         }
 
-        private void Start()
+        private void Update()
         {
-            if (_autoEnterRunOnStart && CurrentState == GameState.Boot)
+            if ((CurrentState == GameState.Win || CurrentState == GameState.Lose) && Input.GetKeyDown(_restartKey))
             {
-                ChangeState(GameState.Run);
+                RestartCurrentScene();
             }
+
+            RefreshDebugHud();
         }
 
-        public void ChangeState(GameState newState)
+        public void RegisterCaravan(CaravanController caravan)
         {
-            if (newState == CurrentState)
-            {
-                return;
-            }
+            _caravan = caravan;
+            RefreshDebugHud();
+        }
 
-            GameState previous = CurrentState;
-            CurrentState = newState;
-            RefreshUi();
-            StateTransitioned?.Invoke(previous, newState);
-            StateChanged?.Invoke(CurrentState);
+        public void SetRemainingTargets(int remainingTargets, int remainingSegments)
+        {
+            _remainingTargets = Mathf.Max(0, remainingTargets);
+            _remainingSegments = Mathf.Max(0, remainingSegments);
+            RefreshDebugHud();
         }
 
         public void TriggerWin()
@@ -72,16 +75,31 @@ namespace KitchenCaravan.Core
         public void RestartCurrentScene()
         {
             Time.timeScale = 1f;
-            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            Scene activeScene = SceneManager.GetActiveScene();
+            if (!string.IsNullOrEmpty(activeScene.path))
+            {
+                SceneManager.LoadScene(activeScene.path);
+            }
+            else
+            {
+                SceneManager.LoadScene(activeScene.buildIndex);
+            }
         }
 
-        private void EnsurePrototypeUi()
+        private void ChangeState(GameState newState)
         {
-            if (_statusLabel != null && _restartButton != null)
+            if (CurrentState == newState)
             {
                 return;
             }
 
+            CurrentState = newState;
+            RefreshStateUi();
+            StateChanged?.Invoke(CurrentState);
+        }
+
+        private void EnsurePrototypeUi()
+        {
             Canvas existingCanvas = FindFirstObjectByType<Canvas>();
             Canvas canvas = existingCanvas;
             if (canvas == null)
@@ -92,23 +110,17 @@ namespace KitchenCaravan.Core
                 CanvasScaler scaler = canvasObject.GetComponent<CanvasScaler>();
                 scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
                 scaler.referenceResolution = new Vector2(1080f, 1920f);
-                scaler.matchWidthOrHeight = 0.75f;
+                scaler.matchWidthOrHeight = 0.8f;
             }
 
             if (_statusLabel == null)
             {
-                GameObject labelObject = new GameObject("StatusLabel", typeof(RectTransform), typeof(Text));
-                labelObject.transform.SetParent(canvas.transform, false);
-                RectTransform rect = labelObject.GetComponent<RectTransform>();
-                rect.anchorMin = new Vector2(0.5f, 0.5f);
-                rect.anchorMax = new Vector2(0.5f, 0.5f);
-                rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.sizeDelta = new Vector2(700f, 180f);
-                _statusLabel = labelObject.GetComponent<Text>();
-                _statusLabel.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                _statusLabel.fontSize = 72;
-                _statusLabel.alignment = TextAnchor.MiddleCenter;
-                _statusLabel.color = Color.white;
+                _statusLabel = CreateText(canvas.transform, "StatusLabel", new Vector2(0f, 160f), 76, TextAnchor.MiddleCenter);
+            }
+
+            if (_debugLabel == null)
+            {
+                _debugLabel = CreateText(canvas.transform, "DebugLabel", new Vector2(0f, 820f), 34, TextAnchor.UpperCenter);
             }
 
             if (_restartButton == null)
@@ -119,38 +131,64 @@ namespace KitchenCaravan.Core
                 rect.anchorMin = new Vector2(0.5f, 0.5f);
                 rect.anchorMax = new Vector2(0.5f, 0.5f);
                 rect.pivot = new Vector2(0.5f, 0.5f);
-                rect.sizeDelta = new Vector2(320f, 90f);
-                rect.anchoredPosition = new Vector2(0f, -120f);
-                buttonObject.GetComponent<Image>().color = new Color(0.2f, 0.55f, 0.24f, 1f);
+                rect.sizeDelta = new Vector2(340f, 94f);
+                rect.anchoredPosition = new Vector2(0f, 30f);
+                buttonObject.GetComponent<Image>().color = new Color(0.14f, 0.58f, 0.27f, 1f);
                 _restartButton = buttonObject.GetComponent<Button>();
                 _restartButton.onClick.AddListener(RestartCurrentScene);
 
-                GameObject textObject = new GameObject("Label", typeof(RectTransform), typeof(Text));
-                textObject.transform.SetParent(buttonObject.transform, false);
-                RectTransform textRect = textObject.GetComponent<RectTransform>();
+                Text buttonText = CreateText(buttonObject.transform, "Label", Vector2.zero, 34, TextAnchor.MiddleCenter);
+                RectTransform textRect = buttonText.rectTransform;
                 textRect.anchorMin = Vector2.zero;
                 textRect.anchorMax = Vector2.one;
                 textRect.offsetMin = Vector2.zero;
                 textRect.offsetMax = Vector2.zero;
-                Text buttonText = textObject.GetComponent<Text>();
-                buttonText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                buttonText.fontSize = 34;
-                buttonText.alignment = TextAnchor.MiddleCenter;
-                buttonText.color = Color.white;
                 buttonText.text = "Restart";
             }
+
+            RefreshStateUi();
+            RefreshDebugHud();
         }
 
-        private void RefreshUi()
+        private void RefreshStateUi()
         {
             if (_statusLabel == null || _restartButton == null)
             {
                 return;
             }
 
-            _statusLabel.gameObject.SetActive(CurrentState == GameState.Win || CurrentState == GameState.Lose);
-            _restartButton.gameObject.SetActive(CurrentState == GameState.Win || CurrentState == GameState.Lose);
+            bool showEndState = CurrentState == GameState.Win || CurrentState == GameState.Lose;
+            _statusLabel.gameObject.SetActive(showEndState);
+            _restartButton.gameObject.SetActive(showEndState);
             _statusLabel.text = CurrentState == GameState.Win ? "YOU WIN" : CurrentState == GameState.Lose ? "YOU LOSE" : string.Empty;
+        }
+
+        private void RefreshDebugHud()
+        {
+            if (_debugLabel == null)
+            {
+                return;
+            }
+
+            _debugLabel.text = $"Targets: {_remainingTargets}   Segments: {_remainingSegments}   Restart: {_restartKey}";
+        }
+
+        private static Text CreateText(Transform parent, string name, Vector2 anchoredPosition, int fontSize, TextAnchor alignment)
+        {
+            GameObject textObject = new GameObject(name, typeof(RectTransform), typeof(Text));
+            textObject.transform.SetParent(parent, false);
+            RectTransform rect = textObject.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = new Vector2(900f, 140f);
+            rect.anchoredPosition = anchoredPosition;
+            Text text = textObject.GetComponent<Text>();
+            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            text.fontSize = fontSize;
+            text.alignment = alignment;
+            text.color = Color.white;
+            return text;
         }
     }
 }

@@ -1,41 +1,42 @@
 using UnityEngine;
 using KitchenCaravan.Caravan;
-using KitchenCaravan.Core;
-using KitchenCaravan.UI;
+using KitchenCaravan.Utils;
 
 namespace KitchenCaravan.Combat
 {
-    // Simple upward projectile used by the Level 1 prototype.
+    // Basic projectile for the prototype. It travels in a fixed direction and damages the first caravan unit hit.
     [RequireComponent(typeof(SpriteRenderer))]
     public sealed class ProjectileBasic : MonoBehaviour
     {
         [SerializeField] private int _damage = 5;
-        [SerializeField] private float _speed = 8f;
+        [SerializeField] private float _speed = 8.5f;
         [SerializeField] private float _lifeTime = 3f;
 
+        private Vector3 _direction = Vector3.up;
         private float _age;
 
-        public void Initialize(float speed, int damage)
+        public void Initialize(Vector3 direction, float speed, int damage)
         {
+            _direction = direction.sqrMagnitude > 0.0001f ? direction.normalized : Vector3.up;
             _speed = speed;
             _damage = damage;
             _age = 0f;
+            if (_direction.sqrMagnitude > 0.0001f)
+            {
+                transform.up = _direction;
+            }
         }
 
         private void Awake()
         {
-            EnsureCollider();
-        }
-
-        private void Start()
-        {
+            EnsurePhysics();
             EnsureVisual();
         }
 
         private void Update()
         {
             _age += Time.deltaTime;
-            transform.position += Vector3.up * (_speed * Time.deltaTime);
+            transform.position += _direction * (_speed * Time.deltaTime);
             if (_age >= _lifeTime)
             {
                 Destroy(gameObject);
@@ -47,18 +48,13 @@ namespace KitchenCaravan.Combat
             if (other.TryGetComponent(out SegmentController segment))
             {
                 segment.ApplyDamage(_damage);
-                SpawnHitFlash(segment.DamageAnchor.position);
                 Destroy(gameObject);
                 return;
             }
 
             if (other.TryGetComponent(out CaptainController captain))
             {
-                if (captain.ApplyDamage(_damage))
-                {
-                    SpawnHitFlash(captain.DamageAnchor.position);
-                }
-
+                captain.ApplyDamage(_damage);
                 Destroy(gameObject);
             }
         }
@@ -66,12 +62,13 @@ namespace KitchenCaravan.Combat
         private void EnsureVisual()
         {
             SpriteRenderer renderer = GetComponent<SpriteRenderer>();
-            renderer.sprite = KitchenCaravan.VerticalSlice.RuntimeSpriteFactory.WhiteSquare;
-            renderer.color = new Color(1f, 0.92f, 0.3f, 1f);
-            transform.localScale = new Vector3(0.18f, 0.42f, 1f);
+            renderer.sprite = PrototypeSpriteLibrary.WhiteSquare;
+            renderer.color = new Color(1f, 0.93f, 0.42f, 1f);
+            renderer.sortingOrder = 25;
+            transform.localScale = new Vector3(0.16f, 0.42f, 1f);
         }
 
-        private void EnsureCollider()
+        private void EnsurePhysics()
         {
             CircleCollider2D collider = GetComponent<CircleCollider2D>();
             if (collider == null)
@@ -80,6 +77,7 @@ namespace KitchenCaravan.Combat
             }
 
             collider.isTrigger = true;
+            collider.radius = 0.2f;
 
             Rigidbody2D body = GetComponent<Rigidbody2D>();
             if (body == null)
@@ -89,17 +87,7 @@ namespace KitchenCaravan.Combat
 
             body.gravityScale = 0f;
             body.bodyType = RigidbodyType2D.Kinematic;
-        }
-
-        private static void SpawnHitFlash(Vector3 position)
-        {
-            GameObject go = new GameObject("HitFlash");
-            go.transform.position = position;
-            SpriteRenderer renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sprite = KitchenCaravan.VerticalSlice.RuntimeSpriteFactory.WhiteSquare;
-            renderer.color = new Color(1f, 0.9f, 0.45f, 0.8f);
-            go.transform.localScale = new Vector3(0.32f, 0.32f, 1f);
-            go.AddComponent<TemporaryHitFlash>();
+            body.simulated = true;
         }
     }
 }
